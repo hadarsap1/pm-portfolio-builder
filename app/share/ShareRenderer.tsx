@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import type { PortfolioData, DesignPreferences, StrategicFocus } from "@/lib/types/portfolio";
 import { getAccent } from "@/lib/utils/accent";
 import HeroSection from "@/components/portfolio/HeroSection";
 import ImpactDashboard from "@/components/portfolio/ImpactDashboard";
@@ -10,13 +9,8 @@ import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import EducationSection from "@/components/portfolio/EducationSection";
 import SkillsSection from "@/components/portfolio/SkillsSection";
 import RecommendationsSection from "@/components/portfolio/RecommendationsSection";
+import { decodeSharePayload, type SharePayload } from "@/lib/share/payload";
 import { cn } from "@/lib/utils";
-
-interface SharePayload {
-  portfolio: PortfolioData;
-  design: DesignPreferences;
-  strategy: StrategicFocus;
-}
 
 function SectionHeading({
   children,
@@ -40,15 +34,14 @@ export default function ShareRenderer(): React.JSX.Element {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const hash = window.location.hash.slice(1);
-    if (!hash) { setError(true); return; }
-    try {
-      const json = atob(hash.replace(/-/g, "+").replace(/_/g, "/"));
-      const parsed = JSON.parse(json) as SharePayload;
-      setPayload(parsed);
-    } catch {
-      setError(true);
-    }
+    // Prefer ?d= (server-readable, gets OG meta) and fall back to #hash
+    // for backwards compatibility with older share links.
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get("d") ?? window.location.hash.slice(1);
+    if (!encoded) { setError(true); return; }
+    const parsed = decodeSharePayload(encoded);
+    if (!parsed) { setError(true); return; }
+    setPayload(parsed);
   }, []);
 
   if (error) {

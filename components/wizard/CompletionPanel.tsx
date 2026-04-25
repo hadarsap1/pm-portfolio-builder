@@ -26,7 +26,10 @@ function buildShareUrl(): string {
   const json = JSON.stringify(payload);
   // URL-safe base64
   const encoded = btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  return `${window.location.origin}/share#${encoded}`;
+  // Use ?d= so the server can read the payload and emit per-portfolio
+  // og:*/twitter:* meta. Hash links from older versions still render
+  // client-side via the legacy fallback in ShareRenderer.
+  return `${window.location.origin}/share?d=${encoded}`;
 }
 
 export default function CompletionPanel(): React.JSX.Element {
