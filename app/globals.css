@@ -128,3 +128,30 @@
     @apply font-sans;
   }
 }
+
+@media print {
+  /* Force colours to print — no grey-out */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Strip builder chrome, keep only portfolio content */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Remove page margins imposed by the browser */
+  @page {
+    margin: 0.6in 0.7in;
+  }
+
+  body {
+    background: white;
+  }
+
+  /* Don't break inside experience / education cards */
+  section {
+    break-inside: avoid;
+  }
+}
