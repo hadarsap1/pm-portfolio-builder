@@ -9,6 +9,7 @@ import ExperienceSection from "@/components/portfolio/ExperienceSection";
 import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import EducationSection from "@/components/portfolio/EducationSection";
 import SkillsSection from "@/components/portfolio/SkillsSection";
+import RecommendationsSection from "@/components/portfolio/RecommendationsSection";
 import { cn } from "@/lib/utils";
 
 interface SharePayload {
@@ -78,13 +79,15 @@ export default function ShareRenderer(): React.JSX.Element {
   const accent = getAccent(design);
   const showAll = strategy.emphasizedSections.length === 0;
   const show = (s: string) => showAll || strategy.emphasizedSections.includes(s as never);
-  const sectionOrder = strategy.sectionOrder ?? ["metrics", "experience", "projects", "education", "skills"];
+  const sectionOrder = strategy.sectionOrder ?? ["metrics", "experience", "projects", "recommendations", "education", "skills"];
 
   const showMetrics = portfolio.globalMetrics.length > 0 && show("metrics");
   const showExperience = portfolio.experience.length > 0 && show("experience");
   const showProjects = (portfolio.projects?.length ?? 0) > 0 && show("projects");
   const showEducation = (portfolio.education.length > 0 || (portfolio.certifications?.length ?? 0) > 0) && show("education");
   const showSkills = portfolio.skills.length > 0 && show("skills");
+  const recommendations = portfolio.recommendations ?? [];
+  const showRecommendations = recommendations.length > 0 && show("recommendations");
 
   const sectionContent: Record<string, React.ReactNode> = {
     metrics: showMetrics ? <div key="metrics"><SectionHeading accent={accent}>By the Numbers</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></div> : null,
@@ -92,6 +95,7 @@ export default function ShareRenderer(): React.JSX.Element {
     projects: showProjects ? <div key="projects"><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></div> : null,
     education: showEducation ? <div key="education"><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></div> : null,
     skills: showSkills ? <div key="skills"><SectionHeading accent={accent}>Skills</SectionHeading><SkillsSection skills={portfolio.skills} accent={accent} /></div> : null,
+    recommendations: showRecommendations ? <div key="recommendations"><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></div> : null,
   };
 
   if (design.layoutStyle === "two-column") {
@@ -111,6 +115,7 @@ export default function ShareRenderer(): React.JSX.Element {
           {showMetrics && <div><SectionHeading accent={accent}>Impact</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></div>}
           {showExperience && <div><SectionHeading accent={accent}>Experience</SectionHeading><ExperienceSection experience={portfolio.experience} accent={accent} /></div>}
           {showProjects && <div><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></div>}
+          {showRecommendations && <div><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></div>}
           {showEducation && <div><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></div>}
         </main>
       </div>

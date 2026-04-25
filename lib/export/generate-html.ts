@@ -1,6 +1,6 @@
 import type { PortfolioData, DesignPreferences, StrategicFocus, SectionKey } from "@/lib/types/portfolio";
 
-const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "education", "skills"];
+const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "recommendations", "education", "skills"];
 
 // ── Accent colours ────────────────────────────────────────────────
 interface ColorConfig {
@@ -213,6 +213,37 @@ function renderEducation(
   return degrees + certBlock;
 }
 
+function renderRecommendations(
+  portfolio: PortfolioData,
+  c: ColorConfig
+): string {
+  const recs = portfolio.recommendations ?? [];
+  if (recs.length === 0) return "";
+
+  return recs
+    .map((rec) => {
+      const attribution = [rec.role, rec.company].filter(Boolean).join(", ");
+      const linkedinAnchor = rec.linkedin
+        ? `<a href="${esc(rec.linkedin)}" target="_blank" rel="noopener noreferrer" style="font-size:10px;color:#a1a1aa;text-decoration:none">LinkedIn ↗</a>`
+        : "";
+      return `
+        <figure style="margin:0 0 16px;padding:14px 16px;border:1px solid #e4e4e7;background:#fafafa;border-radius:12px">
+          <blockquote style="margin:0;font-size:13px;line-height:1.6;color:#3f3f46">
+            <span style="color:#d4d4d8">“</span>${esc(rec.quote || "Quote pending")}<span style="color:#d4d4d8">”</span>
+          </blockquote>
+          <figcaption style="margin-top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#18181b">${esc(rec.name || "Recommender")}</div>
+              ${attribution ? `<div style="font-size:11px;color:${c.primary};margin-top:2px">${esc(attribution)}</div>` : ""}
+              ${rec.relationship ? `<div style="font-size:11px;color:#a1a1aa;margin-top:2px">${esc(rec.relationship)}</div>` : ""}
+            </div>
+            ${linkedinAnchor}
+          </figcaption>
+        </figure>`;
+    })
+    .join("");
+}
+
 // ── Main export ───────────────────────────────────────────────────
 export function generatePortfolioHTML(
   portfolio: PortfolioData,
@@ -267,6 +298,7 @@ export function generatePortfolioHTML(
           if (key === "projects") return show("projects") ? section("Projects", renderProjects(portfolio, c)) : "";
           if (key === "education") return show("education") ? section("Education & Certifications", renderEducation(portfolio, c)) : "";
           if (key === "skills") return show("skills") ? section("Skills", renderSkills(portfolio, c)) : "";
+          if (key === "recommendations") return show("recommendations") ? section("Recommendations", renderRecommendations(portfolio, c)) : "";
           return "";
         }).join("")}
       </div>`;
@@ -299,6 +331,7 @@ export function generatePortfolioHTML(
       ${show("metrics") && portfolio.globalMetrics.length ? section("Impact", renderMetrics(portfolio, c)) : ""}
       ${show("experience") && portfolio.experience.length ? section("Experience", renderExperience(portfolio, c)) : ""}
       ${show("projects") && portfolio.projects?.length ? section("Projects", renderProjects(portfolio, c)) : ""}
+      ${show("recommendations") && portfolio.recommendations?.length ? section("Recommendations", renderRecommendations(portfolio, c)) : ""}
       ${show("education") && (portfolio.education.length || portfolio.certifications?.length) ? section("Education & Certifications", renderEducation(portfolio, c)) : ""}
     </main>`;
 

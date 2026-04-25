@@ -20,11 +20,12 @@ import { cn } from "@/lib/utils";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import type { Superpower, EmphasizedSection, SectionKey } from "@/lib/types/portfolio";
 
-const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "education", "skills"];
+const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "recommendations", "education", "skills"];
 const SECTION_LABELS: Record<SectionKey, string> = {
   metrics: "By the Numbers",
   experience: "Experience",
   projects: "Projects",
+  recommendations: "Recommendations",
   education: "Education",
   skills: "Skills",
 };
@@ -61,6 +62,7 @@ const EMPHASIZED_SECTIONS: { value: EmphasizedSection; label: string }[] = [
   { value: "projects", label: "Projects" },
   { value: "skills", label: "Skills" },
   { value: "education", label: "Education" },
+  { value: "recommendations", label: "Recommendations" },
 ];
 
 export default function Step3Strategy(): React.JSX.Element {

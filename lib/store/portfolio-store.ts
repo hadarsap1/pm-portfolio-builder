@@ -13,6 +13,7 @@ import type {
   PortfolioData,
   PortfolioState,
   ProjectItem,
+  RecommendationItem,
   SectionKey,
   SkillCategory,
   StrategicFocus,
@@ -38,6 +39,7 @@ const DEFAULT_PORTFOLIO: PortfolioData = {
   education: [],
   certifications: [],
   skills: [],
+  recommendations: [],
   globalMetrics: [],
 };
 
@@ -59,7 +61,7 @@ const DEFAULT_STATE: PortfolioState = {
   strategy: DEFAULT_STRATEGY,
   wizard: {
     currentStep: 0,
-    totalSteps: 7,
+    totalSteps: 8,
     isComplete: false,
   },
 };
@@ -96,6 +98,11 @@ interface PortfolioStore extends PortfolioState {
   addSkillCategory: (cat: SkillCategory) => void;
   updateSkillCategory: (id: string, data: Partial<SkillCategory>) => void;
   removeSkillCategory: (id: string) => void;
+
+  // Recommendations CRUD
+  addRecommendation: (item: RecommendationItem) => void;
+  updateRecommendation: (id: string, data: Partial<RecommendationItem>) => void;
+  removeRecommendation: (id: string) => void;
 
   // Metrics
   setGlobalMetrics: (metrics: Metric[]) => void;
@@ -376,6 +383,47 @@ export const usePortfolioStore = create<PortfolioStore>()(
           "removeSkillCategory"
         ),
 
+      // ── Recommendations ───────────────────────────────────────────────────
+      addRecommendation: (item) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              recommendations: [...state.portfolio.recommendations, item],
+            },
+          }),
+          false,
+          "addRecommendation"
+        ),
+
+      updateRecommendation: (id, data) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              recommendations: state.portfolio.recommendations.map((r) =>
+                r.id === id ? { ...r, ...data } : r
+              ),
+            },
+          }),
+          false,
+          "updateRecommendation"
+        ),
+
+      removeRecommendation: (id) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              recommendations: state.portfolio.recommendations.filter(
+                (r) => r.id !== id
+              ),
+            },
+          }),
+          false,
+          "removeRecommendation"
+        ),
+
       // ── Metrics ───────────────────────────────────────────────────────────
       setGlobalMetrics: (metrics) =>
         set(
@@ -530,12 +578,33 @@ export const usePortfolioStore = create<PortfolioStore>()(
     }),
     {
       name: "pm-portfolio",
+      version: 2,
       partialize: (state) => ({
         portfolio: state.portfolio,
         design: state.design,
         strategy: state.strategy,
         wizard: state.wizard,
       }),
+      migrate: (persisted: unknown, version: number): PortfolioState => {
+        const state = persisted as Partial<PortfolioState>;
+        if (version < 2) {
+          return {
+            portfolio: {
+              ...DEFAULT_PORTFOLIO,
+              ...state.portfolio,
+              recommendations: state.portfolio?.recommendations ?? [],
+            },
+            design: { ...DEFAULT_DESIGN, ...state.design },
+            strategy: { ...DEFAULT_STRATEGY, ...state.strategy },
+            wizard: {
+              ...DEFAULT_STATE.wizard,
+              ...state.wizard,
+              totalSteps: 8,
+            },
+          };
+        }
+        return state as PortfolioState;
+      },
     }
   ),
   { name: "portfolio-store" }

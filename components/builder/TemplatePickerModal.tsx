@@ -62,6 +62,11 @@ export default function TemplatePickerModal({ open, onClose }: Props): React.JSX
       store.addCertification({ ...cert, id: crypto.randomUUID() });
     });
 
+    // Load recommendations
+    template.portfolio.recommendations.forEach((rec) => {
+      store.addRecommendation({ ...rec, id: crypto.randomUUID() });
+    });
+
     // Load skills
     template.portfolio.skills.forEach((skill) => {
       store.addSkillCategory({ ...skill, id: crypto.randomUUID() });

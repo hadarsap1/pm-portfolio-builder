@@ -62,6 +62,17 @@ export interface ProjectItem {
   tags: string[];
 }
 
+export interface RecommendationItem {
+  id: string;
+  name: string;          // recommender's name
+  role: string;          // their title
+  company: string;       // their company
+  relationship: string;  // e.g. "Manager at Stripe", "Engineering partner on Checkout"
+  quote: string;         // testimonial body
+  avatarUrl?: string;
+  linkedin?: string;
+}
+
 // ── Design Preferences ───────────────────────────────────────────
 
 export type ColorTheme = "minimal" | "bold" | "technical";
@@ -78,8 +89,8 @@ export interface DesignPreferences {
 // ── Strategic Focus ───────────────────────────────────────────────
 
 export type Superpower = "growth" | "zero-to-one" | "technical";
-export type EmphasizedSection = "metrics" | "experience" | "projects" | "skills" | "education";
-export type SectionKey = "metrics" | "experience" | "projects" | "education" | "skills";
+export type EmphasizedSection = "metrics" | "experience" | "projects" | "skills" | "education" | "recommendations";
+export type SectionKey = "metrics" | "experience" | "projects" | "education" | "skills" | "recommendations";
 
 export interface StrategicFocus {
   superpower: Superpower;
@@ -98,6 +109,7 @@ export interface PortfolioData {
   education: EducationItem[];
   certifications: CertificationItem[];
   skills: SkillCategory[];
+  recommendations: RecommendationItem[];
   globalMetrics: Metric[]; // Key metrics surfaced across all roles
 }
 

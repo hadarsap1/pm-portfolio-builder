@@ -10,8 +10,8 @@ export const metadata = {
 const FEATURES = [
   {
     icon: "⚡",
-    title: "Guided 6-step wizard",
-    body: "Walk through basics, experience, education, skills, strategy, and design. Every field updates your live preview instantly.",
+    title: "Guided 8-step wizard",
+    body: "Walk through basics, experience, projects, education, skills, recommendations, strategy, and design. Every field updates your live preview instantly.",
   },
   {
     icon: "✦",

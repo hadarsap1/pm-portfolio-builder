@@ -11,6 +11,7 @@ import ExperienceSection from "@/components/portfolio/ExperienceSection";
 import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import EducationSection from "@/components/portfolio/EducationSection";
 import SkillsSection from "@/components/portfolio/SkillsSection";
+import RecommendationsSection from "@/components/portfolio/RecommendationsSection";
 
 function SectionHeading({
   children,
@@ -29,7 +30,7 @@ function SectionHeading({
   );
 }
 
-const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "education", "skills"];
+const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "recommendations", "education", "skills"];
 
 export default function PreviewShell(): React.JSX.Element {
   const basicInfo = usePortfolioStore((s) => s.portfolio.basicInfo);
@@ -38,6 +39,7 @@ export default function PreviewShell(): React.JSX.Element {
   const education = usePortfolioStore((s) => s.portfolio.education);
   const certifications = usePortfolioStore((s) => s.portfolio.certifications);
   const skills = usePortfolioStore((s) => s.portfolio.skills);
+  const recommendations = usePortfolioStore((s) => s.portfolio.recommendations);
   const globalMetrics = usePortfolioStore((s) => s.portfolio.globalMetrics);
   const design = usePortfolioStore((s) => s.design);
   const layoutStyle = design.layoutStyle;
@@ -53,6 +55,7 @@ export default function PreviewShell(): React.JSX.Element {
     projects.length === 0 &&
     education.length === 0 &&
     skills.length === 0 &&
+    recommendations.length === 0 &&
     globalMetrics.length === 0;
 
   const showAll = emphasizedSections.length === 0;
@@ -63,6 +66,7 @@ export default function PreviewShell(): React.JSX.Element {
   const showProjects = projects.length > 0 && show("projects");
   const showEducation = (education.length > 0 || certifications.length > 0) && show("education");
   const showSkills = skills.length > 0 && show("skills");
+  const showRecommendations = recommendations.length > 0 && show("recommendations");
 
   if (isEmpty) {
     return (
@@ -125,6 +129,13 @@ export default function PreviewShell(): React.JSX.Element {
             </div>
           )}
 
+          {showRecommendations && (
+            <div>
+              <SectionHeading accent={accent}>Recommendations</SectionHeading>
+              <RecommendationsSection recommendations={recommendations} accent={accent} />
+            </div>
+          )}
+
           {showEducation && (
             <div>
               <SectionHeading accent={accent}>Education</SectionHeading>
@@ -165,6 +176,12 @@ export default function PreviewShell(): React.JSX.Element {
       <div key="skills">
         <SectionHeading accent={accent}>Skills</SectionHeading>
         <SkillsSection skills={skills} accent={accent} />
+      </div>
+    ) : null,
+    recommendations: showRecommendations ? (
+      <div key="recommendations">
+        <SectionHeading accent={accent}>Recommendations</SectionHeading>
+        <RecommendationsSection recommendations={recommendations} accent={accent} />
       </div>
     ) : null,
   };

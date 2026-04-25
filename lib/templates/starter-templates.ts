@@ -105,6 +105,24 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         },
       ],
       certifications: [],
+      recommendations: [
+        {
+          id: "r1",
+          name: "Jamie Chen",
+          role: "VP of Product",
+          company: "Example Co",
+          relationship: "Manager, 2022–present",
+          quote: "One of the few PMs I've worked with who can hold both the experiment-velocity bar and the strategic narrative at the same time. They moved our retention numbers more in 12 months than the prior team did in three years.",
+        },
+        {
+          id: "r2",
+          name: "Priya Patel",
+          role: "Staff Engineer",
+          company: "Example Co",
+          relationship: "Tech lead, growth squad",
+          quote: "Specs are tight, hypotheses are explicit, and they actually look at the data after launch. Best PM partnership I've had.",
+        },
+      ],
       skills: [
         { id: "s1", label: "Growth & Analytics", items: ["A/B Testing", "Funnel Analysis", "Cohort Analysis", "SQL", "Amplitude", "Mixpanel"] },
         { id: "s2", label: "Product", items: ["Roadmapping", "Prioritisation", "User Research", "PRDs"] },
@@ -201,6 +219,16 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         },
       ],
       certifications: [],
+      recommendations: [
+        {
+          id: "r1",
+          name: "Sam Okafor",
+          role: "Founder & CEO",
+          company: "Stealth Startup",
+          relationship: "Founding PM partner",
+          quote: "Took an idea from a Notion doc to a paying customer in eight weeks. The kind of operator who'd rather ship and learn than write the perfect PRD.",
+        },
+      ],
       skills: [
         { id: "s1", label: "Discovery & Research", items: ["Customer Interviews", "Jobs-to-be-Done", "Prototyping", "Usability Testing"] },
         { id: "s2", label: "Product", items: ["MVP Scoping", "Roadmapping", "Pricing Strategy", "Go-to-Market"] },
@@ -297,6 +325,16 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         },
       ],
       certifications: [],
+      recommendations: [
+        {
+          id: "r1",
+          name: "Marcus Lin",
+          role: "Director of Engineering",
+          company: "Example Platform",
+          relationship: "Engineering counterpart",
+          quote: "Reads code, asks better questions than half the engineers in the room, and can hold a 12-month platform roadmap in their head. Rare combination.",
+        },
+      ],
       skills: [
         { id: "s1", label: "Technical", items: ["REST APIs", "GraphQL", "SQL", "Python", "System Design", "Data Pipelines"] },
         { id: "s2", label: "Product", items: ["Technical Specs", "Roadmapping", "Developer Experience", "Platform Strategy"] },
@@ -318,7 +356,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
       superpower: "growth",
       emphasizedSections: ["experience", "metrics"],
       toneKeywords: ["stakeholder-management", "enterprise", "strategic", "customer-centric"],
-      sectionOrder: ["metrics", "experience", "projects", "education", "skills"],
+      sectionOrder: ["metrics", "experience", "projects", "recommendations", "education", "skills"],
     },
     portfolio: {
       basicInfo: {
@@ -392,6 +430,16 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         },
       ],
       certifications: [],
+      recommendations: [
+        {
+          id: "r1",
+          name: "Elena Rossi",
+          role: "Chief Customer Officer",
+          company: "Example Enterprise Co",
+          relationship: "Cross-functional partner",
+          quote: "When our top accounts say a feature is a deal-breaker, this PM is the one I want sequencing the response. Calm, structured, and accountable to the outcome — not the ticket.",
+        },
+      ],
       skills: [
         { id: "s1", label: "Enterprise Product", items: ["RBAC", "SSO/SAML", "Audit Logging", "Multi-tenancy", "Compliance"] },
         { id: "s2", label: "Strategy", items: ["Roadmapping", "Stakeholder Management", "QBRs", "Pricing", "RFP Response"] },

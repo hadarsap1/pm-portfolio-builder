@@ -11,8 +11,9 @@ import Step1Experience from "@/components/wizard/steps/Step1Experience";
 import Step2Projects from "@/components/wizard/steps/Step2Projects";
 import Step3Education from "@/components/wizard/steps/Step2Education";
 import Step4Skills from "@/components/wizard/steps/Step2Skills";
-import Step5Strategy from "@/components/wizard/steps/Step3Strategy";
-import Step6Design from "@/components/wizard/steps/Step4Design";
+import Step5Recommendations from "@/components/wizard/steps/Step5Recommendations";
+import Step6Strategy from "@/components/wizard/steps/Step3Strategy";
+import Step7Design from "@/components/wizard/steps/Step4Design";
 
 const STEPS = [
   Step0BasicInfo,
@@ -20,11 +21,12 @@ const STEPS = [
   Step2Projects,
   Step3Education,
   Step4Skills,
-  Step5Strategy,
-  Step6Design,
+  Step5Recommendations,
+  Step6Strategy,
+  Step7Design,
 ] as const;
 
-const STEP_LABELS = ["Basic Info", "Experience", "Projects", "Education", "Skills", "Strategy", "Design"] as const;
+const STEP_LABELS = ["Basic Info", "Experience", "Projects", "Education", "Skills", "Recommendations", "Strategy", "Design"] as const;
 
 function useStepHasContent(): boolean[] {
   const name = usePortfolioStore((s) => s.portfolio.basicInfo.name);
@@ -33,15 +35,17 @@ function useStepHasContent(): boolean[] {
   const education = usePortfolioStore((s) => s.portfolio.education);
   const certifications = usePortfolioStore((s) => s.portfolio.certifications);
   const skills = usePortfolioStore((s) => s.portfolio.skills);
+  const recommendations = usePortfolioStore((s) => s.portfolio.recommendations);
   const toneKeywords = usePortfolioStore((s) => s.strategy.toneKeywords);
   return [
-    /* 0 Basic Info */    Boolean(name && name !== "Your Name"),
-    /* 1 Experience */    experience.length > 0,
-    /* 2 Projects */      projects.length > 0,
-    /* 3 Education */     education.length > 0 || certifications.length > 0,
-    /* 4 Skills */        skills.length > 0,
-    /* 5 Strategy */      toneKeywords.length > 0,
-    /* 6 Design */        true, // always has defaults
+    /* 0 Basic Info */       Boolean(name && name !== "Your Name"),
+    /* 1 Experience */       experience.length > 0,
+    /* 2 Projects */         projects.length > 0,
+    /* 3 Education */        education.length > 0 || certifications.length > 0,
+    /* 4 Skills */           skills.length > 0,
+    /* 5 Recommendations */  recommendations.length > 0,
+    /* 6 Strategy */         toneKeywords.length > 0,
+    /* 7 Design */           true, // always has defaults
   ];
 }
 
