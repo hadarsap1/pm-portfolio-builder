@@ -111,7 +111,7 @@ export default function Step3Strategy(): React.JSX.Element {
           <p className="text-sm text-zinc-500">How should your portfolio position you?</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {SUPERPOWERS.map(({ value, label, description }) => (
             <button
               key={value}

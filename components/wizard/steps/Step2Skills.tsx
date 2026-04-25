@@ -51,7 +51,7 @@ export default function Step2Skills(): React.JSX.Element {
 
         <Card size="sm">
           <CardContent className="space-y-3 pt-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>Category Name</Label>
                 <Input
@@ -124,7 +124,7 @@ export default function Step2Skills(): React.JSX.Element {
           {globalMetrics.map((metric) => (
             <Card key={metric.id} size="sm">
               <CardContent className="pt-4">
-                <div className="grid grid-cols-3 gap-3 items-end">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                   <div className="space-y-1.5">
                     <Label>Value</Label>
                     <Input

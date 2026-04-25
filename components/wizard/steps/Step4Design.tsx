@@ -35,7 +35,7 @@ export default function Step4Design(): React.JSX.Element {
           <p className="text-sm text-zinc-500">Sets the accent color throughout your portfolio.</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {COLOR_THEMES.map(({ value, label, description, swatch }) => (
             <button
               key={value}
@@ -88,7 +88,7 @@ export default function Step4Design(): React.JSX.Element {
           <p className="text-sm text-zinc-500">Typography sets the overall tone.</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {FONT_STYLES.map(({ value, label, description }) => (
             <button
               key={value}

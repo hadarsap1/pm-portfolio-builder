@@ -84,7 +84,7 @@ function SortableCard({
           </div>
         </CardHeader>
         <CardContent className="space-y-4 pt-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Company</Label>
               <Input
@@ -103,7 +103,7 @@ function SortableCard({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Start Date</Label>
               <Input

@@ -27,6 +27,7 @@ export default function BuilderLayout(): React.JSX.Element {
   const [coverOpen, setCoverOpen] = useState(false);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [demoTemplateName, setDemoTemplateName] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Demo mode: ?demo=<templateId> | ?demo=1 (first template)
   // Loads the template, marks the wizard complete, and lands the user
@@ -157,6 +158,63 @@ export default function BuilderLayout(): React.JSX.Element {
           >
             Reset
           </button>
+
+          {/* Mobile overflow menu — surfaces actions hidden on small screens */}
+          <div className="relative md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen((o) => !o)}
+              aria-label="Open menu"
+              aria-expanded={mobileMenuOpen}
+              className="flex items-center justify-center h-9 w-9 rounded-md border border-zinc-200 text-zinc-700 hover:bg-zinc-50 transition-colors"
+            >
+              <span className="text-base leading-none">···</span>
+            </button>
+            {mobileMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setMobileMenuOpen(false)}
+                />
+                <div
+                  role="menu"
+                  className="absolute end-0 mt-2 w-56 rounded-lg border border-zinc-200 bg-white shadow-lg z-50 py-1 text-sm"
+                >
+                  {[
+                    { label: "Templates", onClick: () => setTemplateOpen(true) },
+                    { label: "✦ Import Resume", onClick: () => setImportOpen(true) },
+                    aiAvailable && { label: "✦ Tailor to JD", onClick: () => setTailorOpen(true) },
+                    aiAvailable && { label: "✦ Cover Letter", onClick: () => setCoverOpen(true) },
+                    {
+                      label: "Open Preview ↗",
+                      onClick: () =>
+                        window.open("/preview", "_blank", "noreferrer"),
+                    },
+                    { label: "Reset", onClick: handleReset, danger: true },
+                  ]
+                    .filter(Boolean)
+                    .map((item) => {
+                      const m = item as { label: string; onClick: () => void; danger?: boolean };
+                      return (
+                        <button
+                          key={m.label}
+                          role="menuitem"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            m.onClick();
+                          }}
+                          className={cn(
+                            "block w-full text-start px-3 py-2 hover:bg-zinc-50 transition-colors",
+                            m.danger ? "text-red-600" : "text-zinc-700"
+                          )}
+                        >
+                          {m.label}
+                        </button>
+                      );
+                    })}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         <ExportControls />

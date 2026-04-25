@@ -78,7 +78,7 @@ export default function Step5Recommendations(): React.JSX.Element {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Recommender Name</Label>
                   <Input
@@ -97,7 +97,7 @@ export default function Step5Recommendations(): React.JSX.Element {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>Company</Label>
                   <Input

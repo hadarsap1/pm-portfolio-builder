@@ -86,7 +86,7 @@ export default function Step2Education(): React.JSX.Element {
                     placeholder="MIT, Stanford, General Assembly…"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label>Degree / Credential</Label>
                     <Input
@@ -158,7 +158,7 @@ export default function Step2Education(): React.JSX.Element {
                     placeholder="AWS Certified Cloud Practitioner"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label>Issuing Organisation</Label>
                     <Input
