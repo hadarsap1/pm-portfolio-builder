@@ -31,12 +31,17 @@ function buildShareUrl(): string {
 
 export default function CompletionPanel(): React.JSX.Element {
   const basicInfo = usePortfolioStore((s) => s.portfolio.basicInfo);
+  const portfolioId = usePortfolioStore((s) => s.portfolio.portfolioId);
   const experience = usePortfolioStore((s) => s.portfolio.experience);
   const skills = usePortfolioStore((s) => s.portfolio.skills);
   const globalMetrics = usePortfolioStore((s) => s.portfolio.globalMetrics);
+  const superpower = usePortfolioStore((s) => s.strategy.superpower);
+  const colorTheme = usePortfolioStore((s) => s.design.colorTheme);
   const resumeEditing = usePortfolioStore((s) => s.resumeEditing);
   const aiAvailable = useAIAvailable();
   const [shareUrl, setShareUrl] = useState("");
+  const [galleryListed, setGalleryListed] = useState(false);
+  const [galleryBusy, setGalleryBusy] = useState(false);
 
   async function handleDownload(): Promise<void> {
     const res = await fetch("/api/export", {
@@ -59,6 +64,59 @@ export default function CompletionPanel(): React.JSX.Element {
     const url = buildShareUrl();
     setShareUrl(url);
     void navigator.clipboard.writeText(url).then(() => toast.success("Share link copied to clipboard"));
+  }
+
+  async function handleListInGallery(): Promise<void> {
+    const url = shareUrl || buildShareUrl();
+    if (!url) return;
+    setShareUrl(url);
+    setGalleryBusy(true);
+    try {
+      const res = await fetch("/api/gallery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          portfolioId,
+          name: basicInfo.name,
+          title: basicInfo.title,
+          summary: basicInfo.summary,
+          superpower,
+          colorTheme,
+          shareUrl: url,
+        }),
+      });
+      const body = (await res.json()) as { ok: boolean; error?: string };
+      if (!res.ok || !body.ok) {
+        toast.error(body.error ?? "Could not list in gallery");
+        return;
+      }
+      setGalleryListed(true);
+      toast.success("Listed in the public gallery");
+    } catch {
+      toast.error("Could not reach the gallery service");
+    } finally {
+      setGalleryBusy(false);
+    }
+  }
+
+  async function handleRemoveFromGallery(): Promise<void> {
+    setGalleryBusy(true);
+    try {
+      const res = await fetch(
+        `/api/gallery?portfolioId=${encodeURIComponent(portfolioId)}`,
+        { method: "DELETE" }
+      );
+      if (!res.ok) {
+        toast.error("Could not remove from gallery");
+        return;
+      }
+      setGalleryListed(false);
+      toast.success("Removed from the public gallery");
+    } catch {
+      toast.error("Could not reach the gallery service");
+    } finally {
+      setGalleryBusy(false);
+    }
   }
 
   const stats = [
@@ -115,7 +173,7 @@ export default function CompletionPanel(): React.JSX.Element {
 
       {/* Share URL display */}
       {shareUrl && (
-        <div className="w-full max-w-xs">
+        <div className="w-full max-w-xs space-y-2">
           <div className="rounded-lg bg-zinc-50 border border-zinc-200 px-3 py-2 flex items-center gap-2">
             <span className="text-[11px] text-zinc-500 truncate flex-1">{shareUrl}</span>
             <button
@@ -125,6 +183,16 @@ export default function CompletionPanel(): React.JSX.Element {
               Copy
             </button>
           </div>
+          <button
+            onClick={() => {
+              if (galleryListed) void handleRemoveFromGallery();
+              else void handleListInGallery();
+            }}
+            disabled={galleryBusy}
+            className="w-full text-[11px] text-zinc-500 hover:text-zinc-900 underline underline-offset-2 transition-colors disabled:opacity-50"
+          >
+            {galleryListed ? "Remove from public gallery" : "Also list in the public gallery →"}
+          </button>
         </div>
       )}
 
