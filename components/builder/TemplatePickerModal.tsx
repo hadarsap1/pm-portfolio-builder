@@ -2,8 +2,8 @@
 
 import React from "react";
 import { toast } from "sonner";
-import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { STARTER_TEMPLATES } from "@/lib/templates/starter-templates";
+import { loadTemplate } from "@/lib/templates/load-template";
 import { cn } from "@/lib/utils";
 
 const THEME_COLORS: Record<string, string> = {
@@ -18,60 +18,11 @@ interface Props {
 }
 
 export default function TemplatePickerModal({ open, onClose }: Props): React.JSX.Element | null {
-  const store = usePortfolioStore();
-
   if (!open) return null;
 
   function handleLoad(templateId: string): void {
-    const template = STARTER_TEMPLATES.find((t) => t.id === templateId);
+    const template = loadTemplate(templateId);
     if (!template) return;
-
-    const currentId = usePortfolioStore.getState().portfolio.portfolioId;
-
-    // Preserve portfolioId and reset wizard, then load template data
-    store.resetPortfolio();
-    const resetId = usePortfolioStore.getState().portfolio.portfolioId;
-    // We want to keep the freshly-generated ID from reset, but still
-    // load all the template content
-    void resetId; // used only for the reset side-effect
-    void currentId;
-
-    // Set design + strategy directly via store actions
-    store.setDesignPreferences(template.design);
-    store.setStrategicFocus(template.strategy);
-    store.setBasicInfo(template.portfolio.basicInfo);
-    store.setGlobalMetrics(template.portfolio.globalMetrics);
-
-    // Load experience
-    template.portfolio.experience.forEach((exp) => {
-      store.addExperience({ ...exp, id: crypto.randomUUID() });
-    });
-
-    // Load projects
-    template.portfolio.projects.forEach((proj) => {
-      store.addProject({ ...proj, id: crypto.randomUUID() });
-    });
-
-    // Load education
-    template.portfolio.education.forEach((edu) => {
-      store.addEducation({ ...edu, id: crypto.randomUUID() });
-    });
-
-    // Load certifications
-    template.portfolio.certifications.forEach((cert) => {
-      store.addCertification({ ...cert, id: crypto.randomUUID() });
-    });
-
-    // Load recommendations
-    template.portfolio.recommendations.forEach((rec) => {
-      store.addRecommendation({ ...rec, id: crypto.randomUUID() });
-    });
-
-    // Load skills
-    template.portfolio.skills.forEach((skill) => {
-      store.addSkillCategory({ ...skill, id: crypto.randomUUID() });
-    });
-
     onClose();
     toast.success(`"${template.name}" template loaded — fill in your details.`);
   }

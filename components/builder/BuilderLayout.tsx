@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import WizardPanel from "@/components/builder/WizardPanel";
@@ -12,18 +13,48 @@ import ResumeImportModal from "@/components/builder/ResumeImportModal";
 import TailorJDModal from "@/components/builder/TailorJDModal";
 import CoverLetterModal from "@/components/builder/CoverLetterModal";
 import TemplatePickerModal from "@/components/builder/TemplatePickerModal";
+import { loadTemplate } from "@/lib/templates/load-template";
+import { STARTER_TEMPLATES } from "@/lib/templates/starter-templates";
 import { useAIAvailable } from "@/hooks/useAIAvailable";
 import { cn } from "@/lib/utils";
 
 export default function BuilderLayout(): React.JSX.Element {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const resetPortfolio = usePortfolioStore((s) => s.resetPortfolio);
   const [importOpen, setImportOpen] = useState(false);
   const [tailorOpen, setTailorOpen] = useState(false);
   const [coverOpen, setCoverOpen] = useState(false);
   const [templateOpen, setTemplateOpen] = useState(false);
+  const [demoTemplateName, setDemoTemplateName] = useState<string | null>(null);
 
-  // Auto-show template picker on first empty visit
+  // Demo mode: ?demo=<templateId> | ?demo=1 (first template)
+  // Loads the template, marks the wizard complete, and lands the user
+  // on the finished portfolio so they can see the full app without typing.
+  // Runs before the empty-state template-picker effect.
   useEffect(() => {
+    const demoParam = searchParams.get("demo");
+    if (!demoParam) return;
+    const requested =
+      demoParam === "1" || demoParam === "true"
+        ? STARTER_TEMPLATES[0]?.id
+        : demoParam;
+    if (!requested) return;
+    const template = loadTemplate(requested, { markComplete: true });
+    if (!template) {
+      toast.error("Unknown demo template — starting fresh.");
+      router.replace("/builder");
+      return;
+    }
+    setDemoTemplateName(template.name);
+    sessionStorage.setItem("template-picker-seen", "1");
+    toast.success(`Demo loaded: ${template.name}`);
+    router.replace("/builder");
+  }, [searchParams, router]);
+
+  // Auto-show template picker on first empty visit (skipped during demo).
+  useEffect(() => {
+    if (searchParams.get("demo")) return;
     const s = usePortfolioStore.getState();
     const isDefault =
       s.portfolio.basicInfo.name === "Your Name" &&
@@ -35,9 +66,16 @@ export default function BuilderLayout(): React.JSX.Element {
       sessionStorage.setItem("template-picker-seen", "1");
       setTemplateOpen(true);
     }
-  }, []);
+  }, [searchParams]);
   const [mobileTab, setMobileTab] = useState<"wizard" | "preview">("wizard");
   const aiAvailable = useAIAvailable();
+
+  function handleExitDemo(): void {
+    resetPortfolio();
+    setDemoTemplateName(null);
+    sessionStorage.removeItem("template-picker-seen");
+    toast.success("Demo cleared — start your own portfolio.");
+  }
 
   function handleReset(): void {
     if (!window.confirm("Reset all portfolio data? This cannot be undone.")) return;
@@ -47,6 +85,25 @@ export default function BuilderLayout(): React.JSX.Element {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
+      {/* ── Demo-mode banner ──────────────────────────────────────── */}
+      {demoTemplateName && (
+        <div className="shrink-0 bg-violet-50 border-b border-violet-100 px-4 md:px-6 py-2 flex items-center justify-between gap-3 no-print">
+          <p className="text-xs text-violet-900">
+            <span className="font-semibold">Demo mode:</span>{" "}
+            <span className="text-violet-700">{demoTemplateName}</span>
+            <span className="text-violet-500 hidden sm:inline">
+              {" — explore the finished portfolio, then start your own."}
+            </span>
+          </p>
+          <button
+            onClick={handleExitDemo}
+            className="text-xs font-semibold text-violet-700 hover:text-violet-900 transition-colors shrink-0"
+          >
+            Start fresh →
+          </button>
+        </div>
+      )}
+
       {/* ── Top header ────────────────────────────────────────────── */}
       <header className="flex items-center justify-between shrink-0 border-b bg-white px-4 md:px-6 py-3 gap-3 no-print">
         <div className="flex items-center gap-2 shrink-0">

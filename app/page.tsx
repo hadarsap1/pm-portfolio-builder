@@ -90,14 +90,15 @@ export default function Home(): React.JSX.Element {
             Build my portfolio →
           </Link>
           <Link
-            href="/preview"
-            target="_blank"
-            rel="noreferrer"
+            href="/builder?demo=1"
             className="rounded-md border border-zinc-200 px-6 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
           >
-            See a live example ↗
+            Try the demo →
           </Link>
         </div>
+        <p className="text-xs text-zinc-400 mt-4">
+          The demo loads a fully filled-out portfolio so you can poke around before signing up — no email required.
+        </p>
       </section>
 
       {/* Preview strip */}
