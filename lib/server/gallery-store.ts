@@ -1,5 +1,10 @@
-// In-process public-gallery store. Mirrors analytics-store pattern.
+// In-process public-gallery store.
 // NOTE: Resets on cold starts / serverless restart. For production, replace with Vercel KV or a DB.
+//
+// We hang the Map off `globalThis` because Next.js dev (Turbopack) and the
+// production runtime can give app routes and API routes separate module
+// instances. A plain module-level singleton then ends up as two empty maps —
+// posts go to one, GETs hit the other.
 
 export interface GalleryEntry {
   portfolioId: string;
@@ -14,32 +19,41 @@ export interface GalleryEntry {
 
 const MAX_ENTRIES = 100;
 
-// portfolioId → entry (so re-listing replaces in place)
-const galleryStore = new Map<string, GalleryEntry>();
+const GLOBAL_KEY = Symbol.for("pm-portfolio.gallery-store");
+type GalleryGlobal = typeof globalThis & {
+  [GLOBAL_KEY]?: Map<string, GalleryEntry>;
+};
+
+function store(): Map<string, GalleryEntry> {
+  const g = globalThis as GalleryGlobal;
+  if (!g[GLOBAL_KEY]) g[GLOBAL_KEY] = new Map<string, GalleryEntry>();
+  return g[GLOBAL_KEY];
+}
 
 export function listGallery(): GalleryEntry[] {
-  return Array.from(galleryStore.values()).sort((a, b) => b.createdAt - a.createdAt);
+  return Array.from(store().values()).sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export function upsertGalleryEntry(entry: Omit<GalleryEntry, "createdAt">): GalleryEntry {
-  const existing = galleryStore.get(entry.portfolioId);
+  const map = store();
+  const existing = map.get(entry.portfolioId);
   const stored: GalleryEntry = {
     ...entry,
     createdAt: existing?.createdAt ?? Date.now(),
   };
-  galleryStore.set(entry.portfolioId, stored);
+  map.set(entry.portfolioId, stored);
 
   // FIFO eviction once over cap — drop oldest by createdAt
-  if (galleryStore.size > MAX_ENTRIES) {
-    const oldest = Array.from(galleryStore.values()).sort(
+  if (map.size > MAX_ENTRIES) {
+    const oldest = Array.from(map.values()).sort(
       (a, b) => a.createdAt - b.createdAt
     )[0];
-    if (oldest) galleryStore.delete(oldest.portfolioId);
+    if (oldest) map.delete(oldest.portfolioId);
   }
 
   return stored;
 }
 
 export function removeGalleryEntry(portfolioId: string): boolean {
-  return galleryStore.delete(portfolioId);
+  return store().delete(portfolioId);
 }
