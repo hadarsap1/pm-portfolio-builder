@@ -1,7 +1,25 @@
 import { type NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { clientIp, rateLimit } from "@/lib/server/rate-limit";
 
 export const dynamic = "force-dynamic";
+
+// ── Input limits ──────────────────────────────────────────────────
+// Caps prevent prompt-injection at scale and keep our Anthropic bill bounded.
+// Numbers chosen to exceed any realistic legitimate input.
+const LIMITS = {
+  resumeText: 50_000,
+  jdText: 10_000,
+  bulletsCount: 30,
+  bulletChars: 2_000,
+  experienceCount: 50,
+  skillsCount: 50,
+  shortField: 500,
+} as const;
+
+function tooLong(value: string | undefined, max: number): boolean {
+  return typeof value === "string" && value.length > max;
+}
 
 // ── Request shapes ────────────────────────────────────────────────
 
@@ -156,11 +174,52 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "AI features require ANTHROPIC_API_KEY." }, { status: 503 });
   }
 
+  // Rate limit: 20 calls per IP per minute. Protects the Anthropic key from
+  // unauthenticated abuse / accidental client bugs.
+  const ip = clientIp(request.headers);
+  const limit = rateLimit(`ai:${ip}`, 20, 60_000);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: `Too many requests. Try again in ${limit.retryAfterSeconds}s.` },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } }
+    );
+  }
+
   let body: AIRequest;
   try {
     body = (await request.json()) as AIRequest;
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  // Length guards — reject before we burn tokens on absurd input.
+  if (body.operation === "import-resume" && tooLong(body.text, LIMITS.resumeText)) {
+    return NextResponse.json(
+      { error: `Resume text exceeds ${LIMITS.resumeText} characters.` },
+      { status: 413 }
+    );
+  }
+  if (body.operation === "tailor-to-jd" || body.operation === "cover-letter") {
+    if (tooLong(body.jd, LIMITS.jdText)) {
+      return NextResponse.json(
+        { error: `Job description exceeds ${LIMITS.jdText} characters.` },
+        { status: 413 }
+      );
+    }
+  }
+  if (body.operation === "improve-bullets") {
+    if ((body.bullets?.length ?? 0) > LIMITS.bulletsCount) {
+      return NextResponse.json(
+        { error: `Too many bullets (max ${LIMITS.bulletsCount}).` },
+        { status: 413 }
+      );
+    }
+    if (body.bullets?.some((b) => tooLong(b, LIMITS.bulletChars))) {
+      return NextResponse.json(
+        { error: `Each bullet must be ≤${LIMITS.bulletChars} characters.` },
+        { status: 413 }
+      );
+    }
   }
 
   const client = new Anthropic({ apiKey });

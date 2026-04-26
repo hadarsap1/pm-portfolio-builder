@@ -50,7 +50,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   // Only allow our own /share URLs to prevent the gallery from being weaponised
-  // for arbitrary outbound link spam.
+  // for arbitrary outbound link spam (open-redirect-style attack: a card in
+  // the gallery linking to evil.example.com/share/anything).
   let parsed: URL;
   try {
     parsed = new URL(shareUrl);
@@ -63,6 +64,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!parsed.pathname.startsWith("/share")) {
     return NextResponse.json(
       { ok: false, error: "shareUrl must point to /share" },
+      { status: 400 }
+    );
+  }
+  // Hostname must match this app. Origin from the request is authoritative
+  // because it's what the browser actually saw — don't trust an env var to
+  // be set in every deploy environment.
+  const expectedHost = request.headers.get("host");
+  if (expectedHost && parsed.host !== expectedHost) {
+    return NextResponse.json(
+      { ok: false, error: "shareUrl must be on this domain" },
       { status: 400 }
     );
   }

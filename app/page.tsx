@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import React from "react";
 
 export const metadata = {
@@ -41,10 +42,10 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  { n: "01", label: "Fill in your info", detail: "Name, title, summary, links — takes 3 minutes." },
-  { n: "02", label: "Add your experience", detail: "Roles, companies, bullet points, and per-role metrics." },
-  { n: "03", label: "Pick your style", detail: "Theme, layout, font — live preview updates as you click." },
-  { n: "04", label: "Export or deploy", detail: "HTML file, PDF, or one-click GitHub Pages." },
+  { n: "01", label: "Tell us about you", detail: "Name, title, summary, contact links. The first of eight guided steps." },
+  { n: "02", label: "Add experience & projects", detail: "Roles, bullets, case studies, headline metrics, recommendations." },
+  { n: "03", label: "Pick your style", detail: "Theme, layout, font, section order — preview updates live." },
+  { n: "04", label: "Export or deploy", detail: "HTML, PDF, GitHub Pages, or one-click Vercel." },
 ];
 
 export default function Home(): React.JSX.Element {
@@ -62,7 +63,7 @@ export default function Home(): React.JSX.Element {
           </Link>
           <Link
             href="/builder"
-            className="rounded-md bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+            className="rounded-lg bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
           >
             Start building →
           </Link>
@@ -85,20 +86,32 @@ export default function Home(): React.JSX.Element {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/builder"
-            className="rounded-md bg-zinc-900 px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-700 transition-colors"
+            className="rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-700 transition-colors"
           >
             Build my portfolio →
           </Link>
           <Link
             href="/builder?demo=1"
-            className="rounded-md border border-zinc-200 px-6 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
+            className="rounded-lg border border-zinc-200 px-6 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
           >
             Try the demo →
           </Link>
         </div>
         <p className="text-xs text-zinc-400 mt-4">
-          The demo loads a fully filled-out portfolio so you can poke around before signing up — no email required.
+          The demo loads a fully filled-out portfolio so you can poke around. No email, no account.
         </p>
+
+        {/* Hero illustration */}
+        <div className="mt-12 max-w-3xl mx-auto">
+          <Image
+            src="/landing-hero.png"
+            alt="Abstract illustration of a PM portfolio: a resume, a chart, testimonials, and an avatar"
+            width={1408}
+            height={792}
+            priority
+            className="w-full h-auto"
+          />
+        </div>
       </section>
 
       {/* Preview strip */}
@@ -138,7 +151,7 @@ export default function Home(): React.JSX.Element {
 
       {/* Features */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
-        <h2 className="text-xl font-bold text-center mb-10">Everything you need, nothing you don't</h2>
+        <h2 className="text-xl font-bold text-center mb-10">Everything you need, nothing you don&apos;t</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {FEATURES.map((f) => (
             <div key={f.title} className="rounded-xl border border-zinc-100 p-5 hover:border-zinc-300 transition-colors">
@@ -174,9 +187,9 @@ export default function Home(): React.JSX.Element {
         </p>
         <Link
           href="/builder"
-          className="inline-block rounded-md bg-zinc-900 px-8 py-3.5 text-sm font-semibold text-white hover:bg-zinc-700 transition-colors"
+          className="inline-block rounded-lg bg-zinc-900 px-8 py-3.5 text-sm font-semibold text-white hover:bg-zinc-700 transition-colors"
         >
-          Build my portfolio — it's free →
+          Build my portfolio →
         </Link>
       </section>
 

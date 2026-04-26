@@ -47,6 +47,9 @@ export default function BuilderLayout(): React.JSX.Element {
       router.replace("/builder");
       return;
     }
+    // One-shot URL-driven side effect: the demo param is a launch trigger,
+    // not derivable state. setState here is the right call.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDemoTemplateName(template.name);
     sessionStorage.setItem("template-picker-seen", "1");
     toast.success(`Demo loaded: ${template.name}`);
@@ -65,6 +68,8 @@ export default function BuilderLayout(): React.JSX.Element {
     const seen = sessionStorage.getItem("template-picker-seen");
     if (isDefault && !seen) {
       sessionStorage.setItem("template-picker-seen", "1");
+      // Per-session one-shot trigger; same exception as the demo effect above.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTemplateOpen(true);
     }
   }, [searchParams]);
@@ -87,18 +92,22 @@ export default function BuilderLayout(): React.JSX.Element {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* ── Demo-mode banner ──────────────────────────────────────── */}
+      {/* Neutral colors so the banner doesn't imply the user has chosen the
+          Bold (violet) theme. The "Demo" badge carries the visual weight. */}
       {demoTemplateName && (
-        <div className="shrink-0 bg-violet-50 border-b border-violet-100 px-4 md:px-6 py-2 flex items-center justify-between gap-3 no-print">
-          <p className="text-xs text-violet-900">
-            <span className="font-semibold">Demo mode:</span>{" "}
-            <span className="text-violet-700">{demoTemplateName}</span>
-            <span className="text-violet-500 hidden sm:inline">
-              {" — explore the finished portfolio, then start your own."}
+        <div className="shrink-0 bg-zinc-50 border-b border-zinc-200 px-4 md:px-6 py-2 flex items-center justify-between gap-3 no-print">
+          <p className="text-xs text-zinc-700 flex items-center gap-2 min-w-0">
+            <span className="inline-flex items-center rounded-full bg-zinc-900 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white shrink-0">
+              Demo
+            </span>
+            <span className="font-medium text-zinc-900 truncate">{demoTemplateName}</span>
+            <span className="text-zinc-500 hidden sm:inline truncate">
+              · explore the finished portfolio, then start your own.
             </span>
           </p>
           <button
             onClick={handleExitDemo}
-            className="text-xs font-semibold text-violet-700 hover:text-violet-900 transition-colors shrink-0"
+            className="text-xs font-semibold text-zinc-700 hover:text-zinc-900 transition-colors shrink-0"
           >
             Start fresh →
           </button>

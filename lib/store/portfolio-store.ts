@@ -588,10 +588,17 @@ export const usePortfolioStore = create<PortfolioStore>()(
       migrate: (persisted: unknown, version: number): PortfolioState => {
         const state = persisted as Partial<PortfolioState>;
         if (version < 2) {
+          // Backfill every collection that's been added since the original
+          // schema — projects (phase 10), certifications (phase 11),
+          // recommendations (phase 12). A v1 state predates all of them
+          // and would arrive as `undefined`, breaking spread-based reducers
+          // like addProject.
           return {
             portfolio: {
               ...DEFAULT_PORTFOLIO,
               ...state.portfolio,
+              projects: state.portfolio?.projects ?? [],
+              certifications: state.portfolio?.certifications ?? [],
               recommendations: state.portfolio?.recommendations ?? [],
             },
             design: { ...DEFAULT_DESIGN, ...state.design },

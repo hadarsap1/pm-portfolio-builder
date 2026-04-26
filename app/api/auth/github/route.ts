@@ -1,8 +1,8 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   const clientId = process.env.AUTH_GITHUB_ID;
   if (!clientId) {
     return NextResponse.json({ error: "GitHub OAuth is not configured." }, { status: 503 });

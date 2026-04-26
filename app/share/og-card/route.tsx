@@ -20,9 +20,13 @@ function truncate(s: string, max: number): string {
   return s.length > max ? `${s.slice(0, max - 1).trim()}…` : s;
 }
 
+// Cap raw payload length on the edge worker — every Slack/Twitter/LinkedIn
+// crawler hits this path and we don't want a crafted multi-MB ?d= to chew CPU.
+const MAX_PAYLOAD_LENGTH = 20_000;
+
 export async function GET(request: NextRequest): Promise<Response> {
   const d = request.nextUrl.searchParams.get("d") ?? "";
-  const payload = decodeSharePayload(d);
+  const payload = d.length > MAX_PAYLOAD_LENGTH ? null : decodeSharePayload(d);
 
   const name = payload?.portfolio.basicInfo.name || "PM Portfolio";
   const title = payload?.portfolio.basicInfo.title || "Product Manager";

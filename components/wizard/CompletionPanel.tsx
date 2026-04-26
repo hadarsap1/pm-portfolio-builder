@@ -172,11 +172,22 @@ export default function CompletionPanel(): React.JSX.Element {
         <Button className="w-full" variant="outline" onClick={handleShare}>
           Share Link ↗
         </Button>
+        <Button
+          className="w-full"
+          variant="outline"
+          onClick={() => {
+            if (galleryListed) void handleRemoveFromGallery();
+            else void handleListInGallery();
+          }}
+          disabled={galleryBusy}
+        >
+          {galleryListed ? "Listed in Gallery ✓ — Remove" : "List in Public Gallery"}
+        </Button>
       </div>
 
       {/* Share URL display */}
       {shareUrl && (
-        <div className="w-full max-w-xs space-y-2">
+        <div className="w-full max-w-xs">
           <div className="rounded-lg bg-zinc-50 border border-zinc-200 px-3 py-2 flex items-center gap-2">
             <span className="text-[11px] text-zinc-500 truncate flex-1">{shareUrl}</span>
             <button
@@ -186,16 +197,6 @@ export default function CompletionPanel(): React.JSX.Element {
               Copy
             </button>
           </div>
-          <button
-            onClick={() => {
-              if (galleryListed) void handleRemoveFromGallery();
-              else void handleListInGallery();
-            }}
-            disabled={galleryBusy}
-            className="w-full text-[11px] text-zinc-500 hover:text-zinc-900 underline underline-offset-2 transition-colors disabled:opacity-50"
-          >
-            {galleryListed ? "Remove from public gallery" : "Also list in the public gallery →"}
-          </button>
         </div>
       )}
 

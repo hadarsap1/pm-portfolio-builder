@@ -34,14 +34,17 @@ export default function ShareRenderer(): React.JSX.Element {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Prefer ?d= (server-readable, gets OG meta) and fall back to #hash
-    // for backwards compatibility with older share links.
+    // One-shot decode of URL on mount. Can't be derived during render because
+    // window.location isn't available during SSR. setState in this effect is
+    // the correct pattern despite the lint rule's blanket warning.
+    /* eslint-disable react-hooks/set-state-in-effect */
     const params = new URLSearchParams(window.location.search);
     const encoded = params.get("d") ?? window.location.hash.slice(1);
     if (!encoded) { setError(true); return; }
     const parsed = decodeSharePayload(encoded);
     if (!parsed) { setError(true); return; }
     setPayload(parsed);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   if (error) {

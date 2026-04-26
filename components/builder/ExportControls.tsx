@@ -46,7 +46,6 @@ export default function ExportControls(): React.JSX.Element {
       toast.error(`GitHub auth failed: ${params.get("error")}`);
       window.history.replaceState({}, "", "/builder");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleDownload(): Promise<void> {
