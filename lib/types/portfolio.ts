@@ -108,7 +108,9 @@ export interface ProjectItem {
   problem: string;
   solution: string;
   outcome: string;
-  link?: string;
+  link?: string;          // Marketing / case-study page
+  liveUrl?: string;       // Direct link to the live product, when applicable
+  imageUrl?: string;      // Screenshot / thumbnail (base64 data URL or remote)
   tags: string[];
 }
 

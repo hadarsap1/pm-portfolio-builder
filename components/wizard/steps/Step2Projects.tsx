@@ -194,14 +194,75 @@ function SortableProjectCard({
             />
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label>
+                Live URL <span className="text-zinc-400 font-normal">(optional)</span>
+              </Label>
+              <Input
+                value={project.liveUrl ?? ""}
+                onChange={(e) => onUpdate(project.id, { liveUrl: e.target.value || undefined })}
+                placeholder="https://app.example.com"
+                type="url"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>
+                Case-study URL <span className="text-zinc-400 font-normal">(optional)</span>
+              </Label>
+              <Input
+                value={project.link ?? ""}
+                onChange={(e) => onUpdate(project.id, { link: e.target.value || undefined })}
+                placeholder="https://blog.example.com/launch-post"
+                type="url"
+              />
+            </div>
+          </div>
+
+          {/* Screenshot upload — base64-encoded, stored alongside the project */}
           <div className="space-y-1.5">
-            <Label>Link (optional)</Label>
-            <Input
-              value={project.link ?? ""}
-              onChange={(e) => onUpdate(project.id, { link: e.target.value || undefined })}
-              placeholder="https://..."
-              type="url"
-            />
+            <Label>
+              Screenshot <span className="text-zinc-400 font-normal">(optional, max 1.5MB)</span>
+            </Label>
+            {project.imageUrl ? (
+              <div className="space-y-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={project.imageUrl}
+                  alt=""
+                  className="w-full max-h-40 object-cover rounded-lg border border-zinc-200"
+                />
+                <button
+                  onClick={() => onUpdate(project.id, { imageUrl: undefined })}
+                  className="text-xs text-zinc-400 hover:text-red-500 transition-colors"
+                >
+                  Remove image
+                </button>
+              </div>
+            ) : (
+              <input
+                type="file"
+                accept="image/png, image/jpeg, image/webp"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (file.size > 1.5 * 1024 * 1024) {
+                    toast.error("Image is over 1.5MB — try a smaller one.");
+                    e.target.value = "";
+                    return;
+                  }
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const result = reader.result;
+                    if (typeof result === "string") {
+                      onUpdate(project.id, { imageUrl: result });
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }}
+                className="block w-full text-xs text-zinc-500 file:me-3 file:rounded-lg file:border file:border-zinc-200 file:bg-white file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-zinc-700 hover:file:bg-zinc-50"
+              />
+            )}
           </div>
 
           <div className="space-y-2">

@@ -128,15 +128,29 @@ function renderProjects(
 ): string {
   if (!portfolio.projects?.length) return "";
   return portfolio.projects
-    .map(
-      (p) => `
-      <div style="border:1px solid #e4e4e7;border-radius:12px;padding:20px;margin-bottom:16px;background:#fff">
+    .map((p) => {
+      const links = [
+        p.liveUrl
+          ? `<a href="${esc(p.liveUrl)}" style="font-size:11px;color:${c.primary};text-decoration:none;white-space:nowrap;font-weight:600" target="_blank">Live ↗</a>`
+          : "",
+        p.link
+          ? `<a href="${esc(p.link)}" style="font-size:11px;color:#a1a1aa;text-decoration:none;white-space:nowrap" target="_blank">Case study ↗</a>`
+          : "",
+      ]
+        .filter(Boolean)
+        .join('<span style="margin:0 8px;color:#e4e4e7">·</span>');
+      const image = p.imageUrl
+        ? `<img src="${esc(p.imageUrl)}" alt="" style="width:calc(100% + 40px);margin:-20px -20px 16px;display:block;height:160px;object-fit:cover;border-bottom:1px solid #e4e4e7" />`
+        : "";
+      return `
+      <div style="border:1px solid #e4e4e7;border-radius:12px;padding:20px;margin-bottom:16px;background:#fff;overflow:hidden">
+        ${image}
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px">
           <div>
             <div style="font-weight:600;color:#18181b;font-size:14px">${esc(p.title || "Project")}</div>
             <div style="font-size:12px;color:${c.primary};font-weight:500;margin-top:2px">${esc([p.company, p.duration].filter(Boolean).join(" · "))}</div>
           </div>
-          ${p.link ? `<a href="${esc(p.link)}" style="font-size:11px;color:#a1a1aa;text-decoration:none;white-space:nowrap" target="_blank">Link ↗</a>` : ""}
+          ${links ? `<div style="display:flex;align-items:center">${links}</div>` : ""}
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:${p.tags.length ? "14px" : "0"}">
           ${[
@@ -155,8 +169,8 @@ function renderProjects(
             .join("")}
         </div>
         ${p.tags.length ? `<div style="margin-top:14px">${p.tags.map((t) => badge(t, c.badge, c.badgeText)).join(" ")}</div>` : ""}
-      </div>`
-    )
+      </div>`;
+    })
     .join("");
 }
 
