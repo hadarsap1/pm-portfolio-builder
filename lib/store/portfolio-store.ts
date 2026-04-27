@@ -9,7 +9,10 @@ import type {
   EducationItem,
   EmphasizedSection,
   ExperienceItem,
+  ManifestoItem,
   Metric,
+  MissionSection,
+  NowItem,
   PortfolioData,
   PortfolioState,
   ProjectItem,
@@ -25,14 +28,17 @@ import type {
 const DEFAULT_PORTFOLIO: PortfolioData = {
   portfolioId: crypto.randomUUID(),
   basicInfo: {
-    name: "Your Name",
-    title: "Senior Product Manager",
-    email: "you@example.com",
+    // Empty strings, not "Your Name" / a templated summary. We want users to
+    // see their own voice in the preview from word one — placeholders teach
+    // them to copy a corporate tone they then never edit.
+    name: "",
+    title: "",
+    email: "",
     linkedin: "",
     github: "",
     location: "",
-    summary:
-      "Results-driven product leader with a track record of shipping impactful products at scale.",
+    summary: "",
+    tagline: "",
   },
   experience: [],
   projects: [],
@@ -41,6 +47,9 @@ const DEFAULT_PORTFOLIO: PortfolioData = {
   skills: [],
   recommendations: [],
   globalMetrics: [],
+  mission: null,
+  manifesto: [],
+  now: [],
 };
 
 const DEFAULT_DESIGN: DesignPreferences = {
@@ -61,7 +70,7 @@ const DEFAULT_STATE: PortfolioState = {
   strategy: DEFAULT_STRATEGY,
   wizard: {
     currentStep: 0,
-    totalSteps: 8,
+    totalSteps: 9,
     isComplete: false,
   },
 };
@@ -103,6 +112,20 @@ interface PortfolioStore extends PortfolioState {
   addRecommendation: (item: RecommendationItem) => void;
   updateRecommendation: (id: string, data: Partial<RecommendationItem>) => void;
   removeRecommendation: (id: string) => void;
+
+  // Mission (single-section)
+  setMission: (mission: MissionSection | null) => void;
+  updateMission: (data: Partial<MissionSection>) => void;
+
+  // Manifesto CRUD
+  addManifestoItem: (item: ManifestoItem) => void;
+  updateManifestoItem: (id: string, data: Partial<ManifestoItem>) => void;
+  removeManifestoItem: (id: string) => void;
+
+  // "Now" CRUD
+  addNowItem: (item: NowItem) => void;
+  updateNowItem: (id: string, data: Partial<NowItem>) => void;
+  removeNowItem: (id: string) => void;
 
   // Metrics
   setGlobalMetrics: (metrics: Metric[]) => void;
@@ -424,6 +447,103 @@ export const usePortfolioStore = create<PortfolioStore>()(
           "removeRecommendation"
         ),
 
+      // ── Mission ───────────────────────────────────────────────────────────
+      setMission: (mission) =>
+        set(
+          (state) => ({ portfolio: { ...state.portfolio, mission } }),
+          false,
+          "setMission"
+        ),
+
+      updateMission: (data) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              mission: state.portfolio.mission
+                ? { ...state.portfolio.mission, ...data }
+                : { title: "", body: "", ...data },
+            },
+          }),
+          false,
+          "updateMission"
+        ),
+
+      // ── Manifesto ─────────────────────────────────────────────────────────
+      addManifestoItem: (item) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              manifesto: [...state.portfolio.manifesto, item],
+            },
+          }),
+          false,
+          "addManifestoItem"
+        ),
+
+      updateManifestoItem: (id, data) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              manifesto: state.portfolio.manifesto.map((m) =>
+                m.id === id ? { ...m, ...data } : m
+              ),
+            },
+          }),
+          false,
+          "updateManifestoItem"
+        ),
+
+      removeManifestoItem: (id) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              manifesto: state.portfolio.manifesto.filter((m) => m.id !== id),
+            },
+          }),
+          false,
+          "removeManifestoItem"
+        ),
+
+      // ── "Now" ─────────────────────────────────────────────────────────────
+      addNowItem: (item) =>
+        set(
+          (state) => ({
+            portfolio: { ...state.portfolio, now: [...state.portfolio.now, item] },
+          }),
+          false,
+          "addNowItem"
+        ),
+
+      updateNowItem: (id, data) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              now: state.portfolio.now.map((n) =>
+                n.id === id ? { ...n, ...data } : n
+              ),
+            },
+          }),
+          false,
+          "updateNowItem"
+        ),
+
+      removeNowItem: (id) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              now: state.portfolio.now.filter((n) => n.id !== id),
+            },
+          }),
+          false,
+          "removeNowItem"
+        ),
+
       // ── Metrics ───────────────────────────────────────────────────────────
       setGlobalMetrics: (metrics) =>
         set(
@@ -578,7 +698,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
     }),
     {
       name: "pm-portfolio",
-      version: 2,
+      version: 3,
       partialize: (state) => ({
         portfolio: state.portfolio,
         design: state.design,
@@ -587,26 +707,27 @@ export const usePortfolioStore = create<PortfolioStore>()(
       }),
       migrate: (persisted: unknown, version: number): PortfolioState => {
         const state = persisted as Partial<PortfolioState>;
-        if (version < 2) {
-          // Backfill every collection that's been added since the original
-          // schema — projects (phase 10), certifications (phase 11),
-          // recommendations (phase 12). A v1 state predates all of them
-          // and would arrive as `undefined`, breaking spread-based reducers
-          // like addProject.
+        // Each migration is additive — backfill collections added in that
+        // phase so spread-based reducers don't crash on undefined.
+        const portfolio = {
+          ...DEFAULT_PORTFOLIO,
+          ...state.portfolio,
+          projects: state.portfolio?.projects ?? [],
+          certifications: state.portfolio?.certifications ?? [],
+          recommendations: state.portfolio?.recommendations ?? [],
+          mission: state.portfolio?.mission ?? null,
+          manifesto: state.portfolio?.manifesto ?? [],
+          now: state.portfolio?.now ?? [],
+        };
+        if (version < 3) {
           return {
-            portfolio: {
-              ...DEFAULT_PORTFOLIO,
-              ...state.portfolio,
-              projects: state.portfolio?.projects ?? [],
-              certifications: state.portfolio?.certifications ?? [],
-              recommendations: state.portfolio?.recommendations ?? [],
-            },
+            portfolio,
             design: { ...DEFAULT_DESIGN, ...state.design },
             strategy: { ...DEFAULT_STRATEGY, ...state.strategy },
             wizard: {
               ...DEFAULT_STATE.wizard,
               ...state.wizard,
-              totalSteps: 8,
+              totalSteps: 9,
             },
           };
         }

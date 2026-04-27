@@ -8,7 +8,43 @@ export interface BasicInfo {
   github?: string;
   location?: string;
   summary: string;
+  // Free-form personality positioning. One line. Distinct from `title`.
+  // e.g. "Some people talk about the long game. I run it."
+  tagline?: string;
   avatarUrl?: string; // base64 data URL or remote URL
+}
+
+// ── Identity / personality modules ────────────────────────────────
+
+/**
+ * Long-form section for the things you care about beyond the job —
+ * mission, volunteering, side initiatives. The "Running with Rami" slot.
+ */
+export interface MissionSection {
+  title: string;       // e.g. "Running with Rami"
+  body: string;        // 1–3 paragraphs
+  imageUrl?: string;   // optional photo / icon
+  link?: string;       // optional learn-more URL
+}
+
+/**
+ * Bullet-pointed worldview / how-you-think-about-product statements.
+ * Renders as a stacked list with optional small heading per item.
+ */
+export interface ManifestoItem {
+  id: string;
+  statement: string;   // the belief itself
+  detail?: string;     // optional one-line supporting context
+}
+
+/**
+ * "What I'm doing now" — a Derek-Sivers-style now block.
+ * Each entry is a category (focus, reading, building, learning…) plus content.
+ */
+export interface NowItem {
+  id: string;
+  label: string;       // "Currently focused on", "Reading", "Building"…
+  content: string;
 }
 
 export interface Metric {
@@ -89,8 +125,12 @@ export interface DesignPreferences {
 // ── Strategic Focus ───────────────────────────────────────────────
 
 export type Superpower = "growth" | "zero-to-one" | "technical";
-export type EmphasizedSection = "metrics" | "experience" | "projects" | "skills" | "education" | "recommendations";
-export type SectionKey = "metrics" | "experience" | "projects" | "education" | "skills" | "recommendations";
+export type EmphasizedSection =
+  | "metrics" | "experience" | "projects" | "skills" | "education" | "recommendations"
+  | "mission" | "manifesto" | "now";
+export type SectionKey =
+  | "metrics" | "experience" | "projects" | "education" | "skills" | "recommendations"
+  | "mission" | "manifesto" | "now";
 
 export interface StrategicFocus {
   superpower: Superpower;
@@ -111,6 +151,10 @@ export interface PortfolioData {
   skills: SkillCategory[];
   recommendations: RecommendationItem[];
   globalMetrics: Metric[]; // Key metrics surfaced across all roles
+  // Identity / personality modules — opt-in. Empty/null means "don't render".
+  mission: MissionSection | null;
+  manifesto: ManifestoItem[];
+  now: NowItem[];
 }
 
 // ── AI Scoring (not persisted) ────────────────────────────────────

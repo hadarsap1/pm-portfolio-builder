@@ -20,8 +20,21 @@ import { cn } from "@/lib/utils";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import type { Superpower, EmphasizedSection, SectionKey } from "@/lib/types/portfolio";
 
-const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "recommendations", "education", "skills"];
+const DEFAULT_SECTION_ORDER: SectionKey[] = [
+  "mission",
+  "manifesto",
+  "now",
+  "metrics",
+  "experience",
+  "projects",
+  "recommendations",
+  "education",
+  "skills",
+];
 const SECTION_LABELS: Record<SectionKey, string> = {
+  mission: "What I care about",
+  manifesto: "Manifesto",
+  now: "Now",
   metrics: "By the Numbers",
   experience: "Experience",
   projects: "Projects",
@@ -57,6 +70,9 @@ const SUPERPOWERS: { value: Superpower; label: string; description: string }[] =
 ];
 
 const EMPHASIZED_SECTIONS: { value: EmphasizedSection; label: string }[] = [
+  { value: "mission", label: "What I care about" },
+  { value: "manifesto", label: "Manifesto" },
+  { value: "now", label: "Now" },
   { value: "metrics", label: "Metrics" },
   { value: "experience", label: "Experience" },
   { value: "projects", label: "Projects" },

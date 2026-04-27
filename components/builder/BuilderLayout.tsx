@@ -60,8 +60,10 @@ export default function BuilderLayout(): React.JSX.Element {
   useEffect(() => {
     if (searchParams.get("demo")) return;
     const s = usePortfolioStore.getState();
+    // Defaults are now blank rather than "Your Name", so a fresh visit is
+    // detected by an empty name + no real data.
     const isDefault =
-      s.portfolio.basicInfo.name === "Your Name" &&
+      !s.portfolio.basicInfo.name?.trim() &&
       s.portfolio.experience.length === 0 &&
       s.portfolio.projects.length === 0 &&
       !s.wizard.isComplete;

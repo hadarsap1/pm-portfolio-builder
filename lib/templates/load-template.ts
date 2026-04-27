@@ -42,6 +42,17 @@ export function loadTemplate(
     store.addSkillCategory({ ...skill, id: crypto.randomUUID() });
   });
 
+  // Identity modules
+  if (template.portfolio.mission) {
+    store.setMission({ ...template.portfolio.mission });
+  }
+  template.portfolio.manifesto.forEach((m) => {
+    store.addManifestoItem({ ...m, id: crypto.randomUUID() });
+  });
+  template.portfolio.now.forEach((n) => {
+    store.addNowItem({ ...n, id: crypto.randomUUID() });
+  });
+
   if (options.markComplete) {
     usePortfolioStore.getState().completeWizard();
   }

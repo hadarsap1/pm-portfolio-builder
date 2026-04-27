@@ -1,6 +1,9 @@
 import type { PortfolioData, DesignPreferences, StrategicFocus, SectionKey } from "@/lib/types/portfolio";
 
-const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "recommendations", "education", "skills"];
+const DEFAULT_SECTION_ORDER: SectionKey[] = [
+  "mission", "manifesto", "now",
+  "metrics", "experience", "projects", "recommendations", "education", "skills",
+];
 
 // ── Accent colours ────────────────────────────────────────────────
 interface ColorConfig {
@@ -213,6 +216,61 @@ function renderEducation(
   return degrees + certBlock;
 }
 
+function renderMission(portfolio: PortfolioData, c: ColorConfig): string {
+  const m = portfolio.mission;
+  if (!m || (!m.title && !m.body)) return "";
+  const paragraphs = m.body
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p style="margin:0 0 8px;font-size:14px;color:#52525b;line-height:1.65">${esc(p)}</p>`)
+    .join("");
+  const image = m.imageUrl
+    ? `<img src="${esc(m.imageUrl)}" alt="" style="height:96px;width:96px;border-radius:8px;object-fit:cover;border:1px solid #e4e4e7;margin-right:20px;float:left" />`
+    : "";
+  const link = m.link
+    ? `<a href="${esc(m.link)}" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:${c.primary};text-decoration:none;font-weight:500">Learn more ↗</a>`
+    : "";
+  return `
+    <div style="overflow:hidden">
+      ${image}
+      ${m.title ? `<h3 style="margin:0 0 8px;font-size:15px;font-weight:600;color:#18181b">${esc(m.title)}</h3>` : ""}
+      ${paragraphs}
+      ${link}
+    </div>`;
+}
+
+function renderManifesto(portfolio: PortfolioData, c: ColorConfig): string {
+  const items = portfolio.manifesto ?? [];
+  if (items.length === 0) return "";
+  return `<ol style="margin:0;padding:0;list-style:none">${items
+    .map(
+      (item, i) => `
+      <li style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+        <span style="font-size:24px;font-weight:700;color:${c.primary};line-height:1;font-variant-numeric:tabular-nums;width:32px;flex-shrink:0">${String(i + 1).padStart(2, "0")}</span>
+        <div style="flex:1;min-width:0">
+          <p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#18181b;line-height:1.4">${esc(item.statement || "Untitled belief")}</p>
+          ${item.detail ? `<p style="margin:0;font-size:12px;color:#71717a;line-height:1.5">${esc(item.detail)}</p>` : ""}
+        </div>
+      </li>`
+    )
+    .join("")}</ol>`;
+}
+
+function renderNow(portfolio: PortfolioData, c: ColorConfig): string {
+  const items = portfolio.now ?? [];
+  if (items.length === 0) return "";
+  return items
+    .map(
+      (item) => `
+      <div style="display:flex;gap:12px;align-items:baseline;margin-bottom:10px">
+        <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:${c.primary};width:128px;flex-shrink:0">${esc(item.label || "Now")}</span>
+        <p style="margin:0;font-size:14px;color:#3f3f46;flex:1;line-height:1.5">${esc(item.content)}</p>
+      </div>`
+    )
+    .join("");
+}
+
 function renderRecommendations(
   portfolio: PortfolioData,
   c: ColorConfig
@@ -288,6 +346,7 @@ export function generatePortfolioHTML(
           ${basicInfo.avatarUrl ? `<img src="${esc(basicInfo.avatarUrl)}" alt="${esc(basicInfo.name || "")}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;margin-bottom:16px;border:2px solid #e4e4e7" />` : ""}
           <h1 style="font-size:32px;font-weight:700;letter-spacing:-.02em;color:${c.primary};margin:0">${esc(basicInfo.name || "Your Name")}</h1>
           <p style="font-size:16px;color:#71717a;font-weight:500;margin:4px 0 0">${esc(basicInfo.title || "")}</p>
+          ${basicInfo.tagline ? `<p style="margin:12px 0 0;font-size:20px;font-weight:600;color:#18181b;line-height:1.35">${esc(basicInfo.tagline)}</p>` : ""}
           ${contactHtml}
           ${basicInfo.summary ? `<p style="margin-top:16px;font-size:14px;color:#52525b;line-height:1.7">${esc(basicInfo.summary)}</p>` : ""}
         </div>
@@ -299,6 +358,9 @@ export function generatePortfolioHTML(
           if (key === "education") return show("education") ? section("Education & Certifications", renderEducation(portfolio, c)) : "";
           if (key === "skills") return show("skills") ? section("Skills", renderSkills(portfolio, c)) : "";
           if (key === "recommendations") return show("recommendations") ? section("Recommendations", renderRecommendations(portfolio, c)) : "";
+          if (key === "mission") return show("mission") ? section("What I care about", renderMission(portfolio, c)) : "";
+          if (key === "manifesto") return show("manifesto") ? section("Manifesto", renderManifesto(portfolio, c)) : "";
+          if (key === "now") return show("now") ? section("Now", renderNow(portfolio, c)) : "";
           return "";
         }).join("")}
       </div>`;
@@ -312,6 +374,7 @@ export function generatePortfolioHTML(
       ${basicInfo.avatarUrl ? `<img src="${esc(basicInfo.avatarUrl)}" alt="${esc(basicInfo.name || "")}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:16px;border:2px solid #e4e4e7" />` : ""}
       <h1 style="font-size:22px;font-weight:700;letter-spacing:-.02em;color:${c.primary};margin:0">${esc(basicInfo.name || "Your Name")}</h1>
       <p style="font-size:13px;color:#71717a;font-weight:500;margin:4px 0 0">${esc(basicInfo.title || "")}</p>
+      ${basicInfo.tagline ? `<p style="margin:10px 0 0;font-size:15px;font-weight:600;color:#18181b;line-height:1.4">${esc(basicInfo.tagline)}</p>` : ""}
       ${contactHtml}
 
       ${
@@ -330,6 +393,9 @@ export function generatePortfolioHTML(
     <main style="flex:1;padding:40px 36px;overflow:hidden">
       ${show("metrics") && portfolio.globalMetrics.length ? section("Impact", renderMetrics(portfolio, c)) : ""}
       ${show("experience") && portfolio.experience.length ? section("Experience", renderExperience(portfolio, c)) : ""}
+      ${show("manifesto") && portfolio.manifesto?.length ? section("Manifesto", renderManifesto(portfolio, c)) : ""}
+      ${show("mission") && portfolio.mission && (portfolio.mission.title || portfolio.mission.body) ? section("What I care about", renderMission(portfolio, c)) : ""}
+      ${show("now") && portfolio.now?.length ? section("Now", renderNow(portfolio, c)) : ""}
       ${show("projects") && portfolio.projects?.length ? section("Projects", renderProjects(portfolio, c)) : ""}
       ${show("recommendations") && portfolio.recommendations?.length ? section("Recommendations", renderRecommendations(portfolio, c)) : ""}
       ${show("education") && (portfolio.education.length || portfolio.certifications?.length) ? section("Education & Certifications", renderEducation(portfolio, c)) : ""}

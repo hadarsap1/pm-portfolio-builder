@@ -46,6 +46,20 @@ export default function HeroSection({
         {basicInfo.title || "Your Title"}
       </p>
 
+      {/* Personal positioning line — drops below title in both variants and
+          carries more weight than the corporate "summary" paragraph. This is
+          the "Some people talk about the long game. I run it." slot. */}
+      {basicInfo.tagline && (
+        <p
+          className={cn(
+            "mt-3 font-semibold leading-snug",
+            variant === "full" ? "text-xl text-zinc-900" : "text-base text-zinc-900"
+          )}
+        >
+          {basicInfo.tagline}
+        </p>
+      )}
+
       {contactItems.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
           {contactItems.map((item) => (

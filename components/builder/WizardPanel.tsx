@@ -6,29 +6,45 @@ import WizardProgress from "@/components/wizard/WizardProgress";
 import WizardNavigation from "@/components/wizard/WizardNavigation";
 import CompletionPanel from "@/components/wizard/CompletionPanel";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import Step0BasicInfo from "@/components/wizard/steps/Step0BasicInfo";
-import Step1Experience from "@/components/wizard/steps/Step1Experience";
-import Step2Projects from "@/components/wizard/steps/Step2Projects";
-import Step3Education from "@/components/wizard/steps/Step2Education";
-import Step4Skills from "@/components/wizard/steps/Step2Skills";
-import Step5Recommendations from "@/components/wizard/steps/Step5Recommendations";
-import Step6Strategy from "@/components/wizard/steps/Step3Strategy";
-import Step7Design from "@/components/wizard/steps/Step4Design";
+import Step0Voice from "@/components/wizard/steps/Step0Voice";
+import Step1BasicInfo from "@/components/wizard/steps/Step0BasicInfo";
+import Step2Experience from "@/components/wizard/steps/Step1Experience";
+import Step3Projects from "@/components/wizard/steps/Step2Projects";
+import Step4Education from "@/components/wizard/steps/Step2Education";
+import Step5Skills from "@/components/wizard/steps/Step2Skills";
+import Step6Recommendations from "@/components/wizard/steps/Step5Recommendations";
+import Step7Strategy from "@/components/wizard/steps/Step3Strategy";
+import Step8Design from "@/components/wizard/steps/Step4Design";
 
 const STEPS = [
-  Step0BasicInfo,
-  Step1Experience,
-  Step2Projects,
-  Step3Education,
-  Step4Skills,
-  Step5Recommendations,
-  Step6Strategy,
-  Step7Design,
+  Step0Voice,
+  Step1BasicInfo,
+  Step2Experience,
+  Step3Projects,
+  Step4Education,
+  Step5Skills,
+  Step6Recommendations,
+  Step7Strategy,
+  Step8Design,
 ] as const;
 
-const STEP_LABELS = ["Basic Info", "Experience", "Projects", "Education", "Skills", "Recommendations", "Strategy", "Design"] as const;
+const STEP_LABELS = [
+  "Voice",
+  "Basics",
+  "Experience",
+  "Projects",
+  "Education",
+  "Skills",
+  "Recommendations",
+  "Strategy",
+  "Design",
+] as const;
 
 function useStepHasContent(): boolean[] {
+  const tagline = usePortfolioStore((s) => s.portfolio.basicInfo.tagline);
+  const mission = usePortfolioStore((s) => s.portfolio.mission);
+  const manifesto = usePortfolioStore((s) => s.portfolio.manifesto);
+  const now = usePortfolioStore((s) => s.portfolio.now);
   const name = usePortfolioStore((s) => s.portfolio.basicInfo.name);
   const experience = usePortfolioStore((s) => s.portfolio.experience);
   const projects = usePortfolioStore((s) => s.portfolio.projects);
@@ -38,14 +54,20 @@ function useStepHasContent(): boolean[] {
   const recommendations = usePortfolioStore((s) => s.portfolio.recommendations);
   const toneKeywords = usePortfolioStore((s) => s.strategy.toneKeywords);
   return [
-    /* 0 Basic Info */       Boolean(name && name !== "Your Name"),
-    /* 1 Experience */       experience.length > 0,
-    /* 2 Projects */         projects.length > 0,
-    /* 3 Education */        education.length > 0 || certifications.length > 0,
-    /* 4 Skills */           skills.length > 0,
-    /* 5 Recommendations */  recommendations.length > 0,
-    /* 6 Strategy */         toneKeywords.length > 0,
-    /* 7 Design */           true, // always has defaults
+    /* 0 Voice */            Boolean(
+                                (tagline && tagline.trim()) ||
+                                (mission && (mission.title || mission.body)) ||
+                                manifesto.length > 0 ||
+                                now.length > 0
+                              ),
+    /* 1 Basics */           Boolean(name && name.trim()),
+    /* 2 Experience */       experience.length > 0,
+    /* 3 Projects */         projects.length > 0,
+    /* 4 Education */        education.length > 0 || certifications.length > 0,
+    /* 5 Skills */           skills.length > 0,
+    /* 6 Recommendations */  recommendations.length > 0,
+    /* 7 Strategy */         toneKeywords.length > 0,
+    /* 8 Design */           true, // always has defaults
   ];
 }
 

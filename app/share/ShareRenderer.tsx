@@ -9,6 +9,9 @@ import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import EducationSection from "@/components/portfolio/EducationSection";
 import SkillsSection from "@/components/portfolio/SkillsSection";
 import RecommendationsSection from "@/components/portfolio/RecommendationsSection";
+import MissionSectionRender from "@/components/portfolio/MissionSection";
+import ManifestoSection from "@/components/portfolio/ManifestoSection";
+import NowSection from "@/components/portfolio/NowSection";
 import { decodeSharePayload, type SharePayload } from "@/lib/share/payload";
 import { cn } from "@/lib/utils";
 
@@ -75,7 +78,10 @@ export default function ShareRenderer(): React.JSX.Element {
   const accent = getAccent(design);
   const showAll = strategy.emphasizedSections.length === 0;
   const show = (s: string) => showAll || strategy.emphasizedSections.includes(s as never);
-  const sectionOrder = strategy.sectionOrder ?? ["metrics", "experience", "projects", "recommendations", "education", "skills"];
+  const sectionOrder = strategy.sectionOrder ?? [
+    "mission", "manifesto", "now",
+    "metrics", "experience", "projects", "recommendations", "education", "skills",
+  ];
 
   const showMetrics = portfolio.globalMetrics.length > 0 && show("metrics");
   const showExperience = portfolio.experience.length > 0 && show("experience");
@@ -84,6 +90,12 @@ export default function ShareRenderer(): React.JSX.Element {
   const showSkills = portfolio.skills.length > 0 && show("skills");
   const recommendations = portfolio.recommendations ?? [];
   const showRecommendations = recommendations.length > 0 && show("recommendations");
+  const mission = portfolio.mission ?? null;
+  const manifesto = portfolio.manifesto ?? [];
+  const now = portfolio.now ?? [];
+  const showMission = mission !== null && (mission.title || mission.body) && show("mission");
+  const showManifesto = manifesto.length > 0 && show("manifesto");
+  const showNow = now.length > 0 && show("now");
 
   const sectionContent: Record<string, React.ReactNode> = {
     metrics: showMetrics ? <div key="metrics"><SectionHeading accent={accent}>By the Numbers</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></div> : null,
@@ -92,6 +104,9 @@ export default function ShareRenderer(): React.JSX.Element {
     education: showEducation ? <div key="education"><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></div> : null,
     skills: showSkills ? <div key="skills"><SectionHeading accent={accent}>Skills</SectionHeading><SkillsSection skills={portfolio.skills} accent={accent} /></div> : null,
     recommendations: showRecommendations ? <div key="recommendations"><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></div> : null,
+    mission: showMission ? <div key="mission"><SectionHeading accent={accent}>What I care about</SectionHeading><MissionSectionRender mission={mission} accent={accent} /></div> : null,
+    manifesto: showManifesto ? <div key="manifesto"><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></div> : null,
+    now: showNow ? <div key="now"><SectionHeading accent={accent}>Now</SectionHeading><NowSection now={now} accent={accent} /></div> : null,
   };
 
   if (design.layoutStyle === "two-column") {
@@ -108,6 +123,9 @@ export default function ShareRenderer(): React.JSX.Element {
           {showSkills && <div><SectionHeading accent={accent}>Skills</SectionHeading><SkillsSection skills={portfolio.skills} accent={accent} /></div>}
         </aside>
         <main className="flex-1 px-8 py-8 space-y-8">
+          {showManifesto && <div><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></div>}
+          {showMission && <div><SectionHeading accent={accent}>What I care about</SectionHeading><MissionSectionRender mission={mission} accent={accent} /></div>}
+          {showNow && <div><SectionHeading accent={accent}>Now</SectionHeading><NowSection now={now} accent={accent} /></div>}
           {showMetrics && <div><SectionHeading accent={accent}>Impact</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></div>}
           {showExperience && <div><SectionHeading accent={accent}>Experience</SectionHeading><ExperienceSection experience={portfolio.experience} accent={accent} /></div>}
           {showProjects && <div><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></div>}

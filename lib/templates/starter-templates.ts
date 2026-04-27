@@ -128,6 +128,20 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         { id: "s2", label: "Product", items: ["Roadmapping", "Prioritisation", "User Research", "PRDs"] },
         { id: "s3", label: "Tools", items: ["Figma", "Jira", "dbt", "Looker"] },
       ],
+      mission: {
+        title: "Compounding small wins",
+        body: "I run experimentation programs because I believe most growth comes from a long sequence of disciplined small bets — not one heroic launch. The PMs and engineers I work with should leave knowing how to read a funnel, design a clean test, and write a sharp post-mortem.",
+        link: "",
+      },
+      manifesto: [
+        { id: "mf1", statement: "Customer pain beats roadmap commitment.", detail: "If the data says we're wrong, we're wrong — even mid-quarter." },
+        { id: "mf2", statement: "Ship the smallest version that proves the hypothesis.", detail: "Then keep going only if the metric moves." },
+        { id: "mf3", statement: "Velocity is a feature, not a goal.", detail: "Speed without learning is just churn." },
+      ],
+      now: [
+        { id: "n1", label: "Currently focused on", content: "Building a north-star metric framework for our self-serve funnel." },
+        { id: "n2", label: "Reading", content: "\"Working in Public\" — Nadia Eghbal." },
+      ],
     },
   },
   {
@@ -233,6 +247,18 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         { id: "s1", label: "Discovery & Research", items: ["Customer Interviews", "Jobs-to-be-Done", "Prototyping", "Usability Testing"] },
         { id: "s2", label: "Product", items: ["MVP Scoping", "Roadmapping", "Pricing Strategy", "Go-to-Market"] },
         { id: "s3", label: "Tools", items: ["Figma", "Notion", "Linear", "Framer"] },
+      ],
+      mission: {
+        title: "Helping early founders ship",
+        body: "I mentor pre-seed founders pro bono — three a quarter, no paperwork. Mostly product / pricing / first-customer questions. The best ones teach me more than I teach them.",
+        link: "",
+      },
+      manifesto: [
+        { id: "mf1", statement: "Talk to ten users before you write line one of code.", detail: "Five if you're tired. Never zero." },
+        { id: "mf2", statement: "Pricing is a product decision, not a finance one.", detail: "It tells your buyer what you actually believe you're worth." },
+      ],
+      now: [
+        { id: "n1", label: "Currently focused on", content: "Validating a niche workflow tool with 20 design ops leads." },
       ],
     },
   },
@@ -340,6 +366,19 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         { id: "s2", label: "Product", items: ["Technical Specs", "Roadmapping", "Developer Experience", "Platform Strategy"] },
         { id: "s3", label: "Tools", items: ["GitHub", "Datadog", "Terraform", "Linear", "Postman"] },
       ],
+      mission: {
+        title: "Open-source platform tooling",
+        body: "I maintain a small library that makes it easier to wire OpenAPI specs into typed clients. About 40 weekly downloads — but the issues people open are some of the best product feedback I get.",
+        link: "",
+      },
+      manifesto: [
+        { id: "mf1", statement: "If your roadmap can't survive a code review, it's not a roadmap.", detail: "Specs that ignore the codebase produce theatre, not software." },
+        { id: "mf2", statement: "Developer experience is a customer experience problem.", detail: "Internal users churn too — they just do it more politely." },
+      ],
+      now: [
+        { id: "n1", label: "Building", content: "A typed wrapper for our internal events API." },
+        { id: "n2", label: "Reading", content: "\"Designing Data-Intensive Applications\" — Martin Kleppmann." },
+      ],
     },
   },
   {
@@ -444,6 +483,18 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         { id: "s1", label: "Enterprise Product", items: ["RBAC", "SSO/SAML", "Audit Logging", "Multi-tenancy", "Compliance"] },
         { id: "s2", label: "Strategy", items: ["Roadmapping", "Stakeholder Management", "QBRs", "Pricing", "RFP Response"] },
         { id: "s3", label: "Tools", items: ["Salesforce", "Gainsight", "ProductBoard", "Figma", "Jira"] },
+      ],
+      mission: {
+        title: "Coaching first-time enterprise PMs",
+        body: "I run a quarterly cohort for PMs moving from consumer into enterprise. Half the curriculum is unlearning — the other half is learning to love a slow, paperwork-heavy buying process.",
+        link: "",
+      },
+      manifesto: [
+        { id: "mf1", statement: "Sales isn't the customer. The end-user is.", detail: "But sales has the relationship — earn their trust before you fight them." },
+        { id: "mf2", statement: "Compliance isn't a tax. It's a feature for the buyer who matters most.", detail: "The CISO outranks every roadmap input you have." },
+      ],
+      now: [
+        { id: "n1", label: "Currently focused on", content: "Shipping our SOC 2 Type II readiness program." },
       ],
     },
   },

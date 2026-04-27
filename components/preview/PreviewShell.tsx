@@ -12,6 +12,9 @@ import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import EducationSection from "@/components/portfolio/EducationSection";
 import SkillsSection from "@/components/portfolio/SkillsSection";
 import RecommendationsSection from "@/components/portfolio/RecommendationsSection";
+import MissionSectionRender from "@/components/portfolio/MissionSection";
+import ManifestoSection from "@/components/portfolio/ManifestoSection";
+import NowSection from "@/components/portfolio/NowSection";
 
 function SectionHeading({
   children,
@@ -30,7 +33,19 @@ function SectionHeading({
   );
 }
 
-const DEFAULT_SECTION_ORDER: SectionKey[] = ["metrics", "experience", "projects", "recommendations", "education", "skills"];
+// Voice-first ordering: identity modules (mission, manifesto, now) lead,
+// then the structured CV-shaped sections.
+const DEFAULT_SECTION_ORDER: SectionKey[] = [
+  "mission",
+  "manifesto",
+  "now",
+  "metrics",
+  "experience",
+  "projects",
+  "recommendations",
+  "education",
+  "skills",
+];
 
 export default function PreviewShell(): React.JSX.Element {
   const basicInfo = usePortfolioStore((s) => s.portfolio.basicInfo);
@@ -40,6 +55,9 @@ export default function PreviewShell(): React.JSX.Element {
   const certifications = usePortfolioStore((s) => s.portfolio.certifications);
   const skills = usePortfolioStore((s) => s.portfolio.skills);
   const recommendations = usePortfolioStore((s) => s.portfolio.recommendations);
+  const mission = usePortfolioStore((s) => s.portfolio.mission);
+  const manifesto = usePortfolioStore((s) => s.portfolio.manifesto);
+  const now = usePortfolioStore((s) => s.portfolio.now);
   const globalMetrics = usePortfolioStore((s) => s.portfolio.globalMetrics);
   const design = usePortfolioStore((s) => s.design);
   const layoutStyle = design.layoutStyle;
@@ -51,11 +69,15 @@ export default function PreviewShell(): React.JSX.Element {
   const accent = getAccent(design);
   const isEmpty =
     !basicInfo.summary &&
+    !basicInfo.tagline &&
     experience.length === 0 &&
     projects.length === 0 &&
     education.length === 0 &&
     skills.length === 0 &&
     recommendations.length === 0 &&
+    !mission &&
+    manifesto.length === 0 &&
+    now.length === 0 &&
     globalMetrics.length === 0;
 
   const showAll = emphasizedSections.length === 0;
@@ -67,13 +89,21 @@ export default function PreviewShell(): React.JSX.Element {
   const showEducation = (education.length > 0 || certifications.length > 0) && show("education");
   const showSkills = skills.length > 0 && show("skills");
   const showRecommendations = recommendations.length > 0 && show("recommendations");
+  const showMission = mission !== null && (mission.title || mission.body) && show("mission");
+  const showManifesto = manifesto.length > 0 && show("manifesto");
+  const showNow = now.length > 0 && show("now");
 
   if (isEmpty) {
     return (
-      <div className="flex items-center justify-center h-full min-h-64">
-        <p className="text-xs text-zinc-400">
-          Fill in the wizard on the left — your portfolio updates here live.
-        </p>
+      <div className="flex items-center justify-center h-full min-h-64 px-8">
+        <div className="max-w-sm text-center space-y-2">
+          <p className="text-sm font-medium text-zinc-700">
+            Start with your voice.
+          </p>
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            A one-line positioning, the thing you care about beyond the job, two beliefs you&apos;d defend. The CV stuff comes after — and it&apos;ll read better for it.
+          </p>
+        </div>
       </div>
     );
   }
@@ -108,6 +138,27 @@ export default function PreviewShell(): React.JSX.Element {
 
         {/* Main */}
         <main className="flex-1 px-8 py-8 space-y-8 overflow-y-auto">
+          {showManifesto && (
+            <div>
+              <SectionHeading accent={accent}>Manifesto</SectionHeading>
+              <ManifestoSection manifesto={manifesto} accent={accent} />
+            </div>
+          )}
+
+          {showMission && (
+            <div>
+              <SectionHeading accent={accent}>What I care about</SectionHeading>
+              <MissionSectionRender mission={mission} accent={accent} />
+            </div>
+          )}
+
+          {showNow && (
+            <div>
+              <SectionHeading accent={accent}>Now</SectionHeading>
+              <NowSection now={now} accent={accent} />
+            </div>
+          )}
+
           {showMetrics && (
             <div>
               <SectionHeading accent={accent}>Impact</SectionHeading>
@@ -182,6 +233,24 @@ export default function PreviewShell(): React.JSX.Element {
       <div key="recommendations">
         <SectionHeading accent={accent}>Recommendations</SectionHeading>
         <RecommendationsSection recommendations={recommendations} accent={accent} />
+      </div>
+    ) : null,
+    mission: showMission ? (
+      <div key="mission">
+        <SectionHeading accent={accent}>What I care about</SectionHeading>
+        <MissionSectionRender mission={mission} accent={accent} />
+      </div>
+    ) : null,
+    manifesto: showManifesto ? (
+      <div key="manifesto">
+        <SectionHeading accent={accent}>Manifesto</SectionHeading>
+        <ManifestoSection manifesto={manifesto} accent={accent} />
+      </div>
+    ) : null,
+    now: showNow ? (
+      <div key="now">
+        <SectionHeading accent={accent}>Now</SectionHeading>
+        <NowSection now={now} accent={accent} />
       </div>
     ) : null,
   };
