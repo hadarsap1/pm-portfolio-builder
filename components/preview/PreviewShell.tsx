@@ -6,6 +6,8 @@ import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { getAccent } from "@/lib/utils/accent";
 import type { SectionKey } from "@/lib/types/portfolio";
 import HeroSection from "@/components/portfolio/HeroSection";
+import TerminalHero from "@/components/portfolio/TerminalHero";
+import TerminalExperience from "@/components/portfolio/TerminalExperience";
 import ImpactDashboard from "@/components/portfolio/ImpactDashboard";
 import ExperienceSection from "@/components/portfolio/ExperienceSection";
 import ProjectsSection from "@/components/portfolio/ProjectsSection";
@@ -70,6 +72,10 @@ export default function PreviewShell(): React.JSX.Element {
   );
 
   const accent = getAccent(design);
+  const isTerminal = design.presentationMode === "terminal";
+  // Pick which hero/experience renderer matches the current presentation
+  const Hero = isTerminal ? TerminalHero : HeroSection;
+  const Experience = isTerminal ? TerminalExperience : ExperienceSection;
   const isEmpty =
     !basicInfo.summary &&
     !basicInfo.tagline &&
@@ -116,7 +122,7 @@ export default function PreviewShell(): React.JSX.Element {
   // ── Two-column layout ────────────────────────────────────────────
   if (layoutStyle === "two-column") {
     return (
-      <div className="flex gap-0 h-full text-sm">
+      <div className={cn("flex gap-0 h-full text-sm", isTerminal && "font-mono")}>
         {/* Sidebar */}
         <aside
           className={cn(
@@ -124,7 +130,7 @@ export default function PreviewShell(): React.JSX.Element {
             accent.border
           )}
         >
-          <HeroSection basicInfo={basicInfo} accent={accent} variant="header" />
+          <Hero basicInfo={basicInfo} accent={accent} variant="header" />
 
           {basicInfo.summary && (
             <div>
@@ -174,7 +180,7 @@ export default function PreviewShell(): React.JSX.Element {
           {showExperience && (
             <div>
               <SectionHeading accent={accent}>Experience</SectionHeading>
-              <ExperienceSection experience={experience} accent={accent} />
+              <Experience experience={experience} accent={accent} />
             </div>
           )}
 
@@ -220,7 +226,7 @@ export default function PreviewShell(): React.JSX.Element {
     experience: showExperience ? (
       <div key="experience">
         <SectionHeading accent={accent}>Experience</SectionHeading>
-        <ExperienceSection experience={experience} accent={accent} />
+        <Experience experience={experience} accent={accent} />
       </div>
     ) : null,
     projects: showProjects ? (
@@ -275,10 +281,10 @@ export default function PreviewShell(): React.JSX.Element {
 
   // ── One-column layout ────────────────────────────────────────────
   return (
-    <div className="max-w-2xl mx-auto px-8 py-10 space-y-10 text-sm">
+    <div className={cn("max-w-2xl mx-auto px-8 py-10 space-y-10 text-sm", isTerminal && "font-mono")}>
       {/* Hero */}
       <div className={cn("border-b pb-7", accent.border)}>
-        <HeroSection basicInfo={basicInfo} accent={accent} variant="full" />
+        <Hero basicInfo={basicInfo} accent={accent} variant="full" />
       </div>
 
       {sectionOrder.map((key) => sectionContent[key])}

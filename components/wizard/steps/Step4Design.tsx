@@ -3,7 +3,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
-import type { ColorTheme, LayoutStyle, FontStyle } from "@/lib/types/portfolio";
+import type { ColorTheme, LayoutStyle, FontStyle, PresentationMode } from "@/lib/types/portfolio";
 
 const COLOR_THEMES: { value: ColorTheme; label: string; description: string; swatch: string }[] = [
   { value: "minimal", label: "Minimal", description: "Clean slate palette", swatch: "bg-slate-700" },
@@ -22,12 +22,61 @@ const FONT_STYLES: { value: FontStyle; label: string; description: string }[] = 
   { value: "technical", label: "Technical", description: "JetBrains Mono — code" },
 ];
 
+const PRESENTATION_MODES: { value: PresentationMode; label: string; description: string }[] = [
+  {
+    value: "standard",
+    label: "Editorial",
+    description: "Magazine-style layout. Clean, restrained, hiring-manager-friendly.",
+  },
+  {
+    value: "terminal",
+    label: "Terminal",
+    description: "$ fetch-portfolio.sh aesthetic. Git-log experience. Speaks engineer.",
+  },
+];
+
 export default function Step4Design(): React.JSX.Element {
   const design = usePortfolioStore((s) => s.design);
   const setDesignPreferences = usePortfolioStore((s) => s.setDesignPreferences);
 
+  const presentationMode = design.presentationMode ?? "standard";
+
   return (
     <div className="space-y-7 px-6 py-6">
+      {/* Presentation Mode — the biggest visual choice, leads the step */}
+      <div className="space-y-3">
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold text-zinc-900">Presentation</h2>
+          <p className="text-sm text-zinc-500">
+            The overall vibe. Pick the one that matches your audience.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {PRESENTATION_MODES.map(({ value, label, description }) => (
+            <button
+              key={value}
+              onClick={() => setDesignPreferences({ presentationMode: value })}
+              className={cn(
+                "rounded-xl border-2 p-4 text-start transition-all",
+                presentationMode === value
+                  ? "border-zinc-900 bg-zinc-50"
+                  : "border-zinc-200 hover:border-zinc-400"
+              )}
+            >
+              {value === "terminal" && (
+                <div className="mb-2 inline-flex items-baseline gap-1.5 rounded bg-zinc-900 px-2 py-0.5 text-[10px] text-emerald-300 font-mono">
+                  <span>~</span>
+                  <span className="text-white">$ fetch-portfolio.sh</span>
+                </div>
+              )}
+              <p className="text-sm font-semibold text-zinc-900">{label}</p>
+              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">{description}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Color Theme */}
       <div className="space-y-3">
         <div className="space-y-1">

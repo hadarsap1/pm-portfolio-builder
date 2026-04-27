@@ -24,8 +24,13 @@ function buildShareUrl(): string {
     strategy: s.strategy,
   };
   const json = JSON.stringify(payload);
-  // URL-safe base64
-  const encoded = btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  // btoa only handles Latin1, so a tagline with an emoji or Hebrew char
+  // crashes. Encode to UTF-8 bytes first, then map each byte to a Latin1
+  // char so btoa is happy. Produces the same output decodeSharePayload
+  // already accepts on the server (Buffer.from(..., 'base64')).
+  const utf8 = new TextEncoder().encode(json);
+  const binary = Array.from(utf8, (b) => String.fromCharCode(b)).join("");
+  const encoded = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   // Use ?d= so the server can read the payload and emit per-portfolio
   // og:*/twitter:* meta. Hash links from older versions still render
   // client-side via the legacy fallback in ShareRenderer.

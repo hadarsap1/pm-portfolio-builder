@@ -130,11 +130,19 @@ export interface RecommendationItem {
 export type ColorTheme = "minimal" | "bold" | "technical";
 export type LayoutStyle = "one-column" | "two-column";
 export type FontStyle = "modern" | "classic" | "technical";
+/**
+ * Presentation mode is a typographic + render-style overlay separate from
+ * color/layout. "terminal" sets a mono font everywhere and switches the
+ * hero and experience sections to a developer-tools aesthetic
+ * ($ fetch-portfolio.sh prompt, git-log commits) that signals "I speak engineer."
+ */
+export type PresentationMode = "standard" | "terminal";
 
 export interface DesignPreferences {
   colorTheme: ColorTheme;
   layoutStyle: LayoutStyle;
   fontStyle: FontStyle;
+  presentationMode?: PresentationMode;
   customAccentColor?: string; // hex, e.g. "#7c3aed" — overrides colorTheme accent
 }
 
