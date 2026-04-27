@@ -1,12 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
+import { useAIAvailable } from "@/hooks/useAIAvailable";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import VoicePolishPanel from "@/components/wizard/VoicePolishPanel";
 import type { ManifestoItem, NowItem } from "@/lib/types/portfolio";
 
 const NOW_PRESETS = [
@@ -20,9 +22,11 @@ const NOW_PRESETS = [
 
 export default function Step0Voice(): React.JSX.Element {
   const tagline = usePortfolioStore((s) => s.portfolio.basicInfo.tagline ?? "");
+  const title = usePortfolioStore((s) => s.portfolio.basicInfo.title);
   const mission = usePortfolioStore((s) => s.portfolio.mission);
   const manifesto = usePortfolioStore((s) => s.portfolio.manifesto);
   const now = usePortfolioStore((s) => s.portfolio.now);
+  const aiAvailable = useAIAvailable();
 
   const setBasicInfo = usePortfolioStore((s) => s.setBasicInfo);
   const setMission = usePortfolioStore((s) => s.setMission);
@@ -33,6 +37,12 @@ export default function Step0Voice(): React.JSX.Element {
   const addNowItem = usePortfolioStore((s) => s.addNowItem);
   const updateNowItem = usePortfolioStore((s) => s.updateNowItem);
   const removeNowItem = usePortfolioStore((s) => s.removeNowItem);
+
+  // Track which polish panel is open. Tagline + mission are singletons;
+  // manifesto polish is per-item, keyed by item id.
+  const [taglinePolishOpen, setTaglinePolishOpen] = useState(false);
+  const [missionPolishOpen, setMissionPolishOpen] = useState(false);
+  const [manifestoPolishOpenId, setManifestoPolishOpenId] = useState<string | null>(null);
 
   function handleAddManifesto(): void {
     addManifestoItem({
@@ -78,7 +88,17 @@ export default function Step0Voice(): React.JSX.Element {
 
       {/* ── Tagline ─────────────────────────────────────────────── */}
       <div className="space-y-2">
-        <Label>One-line positioning</Label>
+        <div className="flex items-center justify-between gap-3">
+          <Label>One-line positioning</Label>
+          {aiAvailable && !taglinePolishOpen && (
+            <button
+              onClick={() => setTaglinePolishOpen(true)}
+              className="text-xs font-medium text-violet-600 hover:text-violet-800 transition-colors shrink-0"
+            >
+              ✦ Help me write this
+            </button>
+          )}
+        </div>
         <p className="text-xs text-zinc-500 -mt-1 leading-relaxed">
           A single sentence in your voice. Not a job title.{" "}
           <span className="italic text-zinc-400">
@@ -92,6 +112,17 @@ export default function Step0Voice(): React.JSX.Element {
           maxLength={140}
         />
         <p className="text-[10px] text-zinc-400 text-end">{tagline.length}/140</p>
+        {taglinePolishOpen && (
+          <VoicePolishPanel
+            kind="tagline"
+            context={title}
+            initialRough={tagline}
+            onApply={(p) => {
+              if (p.kind === "tagline") setBasicInfo({ tagline: p.tagline });
+            }}
+            onClose={() => setTaglinePolishOpen(false)}
+          />
+        )}
       </div>
 
       {/* ── Mission ─────────────────────────────────────────────── */}
@@ -129,7 +160,17 @@ export default function Step0Voice(): React.JSX.Element {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label>Story</Label>
+                <div className="flex items-center justify-between gap-3">
+                  <Label>Story</Label>
+                  {aiAvailable && !missionPolishOpen && (
+                    <button
+                      onClick={() => setMissionPolishOpen(true)}
+                      className="text-xs font-medium text-violet-600 hover:text-violet-800 transition-colors"
+                    >
+                      ✦ Polish my notes
+                    </button>
+                  )}
+                </div>
                 <Textarea
                   value={mission.body}
                   onChange={(e) => updateMission({ body: e.target.value })}
@@ -148,6 +189,23 @@ export default function Step0Voice(): React.JSX.Element {
                   placeholder="https://…"
                 />
               </div>
+              {missionPolishOpen && (
+                <VoicePolishPanel
+                  kind="mission"
+                  context={title}
+                  initialRough={mission.body}
+                  onApply={(p) => {
+                    if (p.kind === "mission") {
+                      updateMission({
+                        // Don't overwrite a title the user has already set
+                        title: mission.title || p.title,
+                        body: p.body,
+                      });
+                    }
+                  }}
+                  onClose={() => setMissionPolishOpen(false)}
+                />
+              )}
             </CardContent>
           </Card>
         )}
@@ -176,12 +234,22 @@ export default function Step0Voice(): React.JSX.Element {
                 <CardHeader className="border-b">
                   <div className="flex items-center justify-between">
                     <CardTitle>Belief {i + 1}</CardTitle>
-                    <button
-                      onClick={() => removeManifestoItem(item.id)}
-                      className="text-xs text-zinc-400 hover:text-red-500 transition-colors"
-                    >
-                      Remove
-                    </button>
+                    <div className="flex items-center gap-3">
+                      {aiAvailable && manifestoPolishOpenId !== item.id && (
+                        <button
+                          onClick={() => setManifestoPolishOpenId(item.id)}
+                          className="text-xs font-medium text-violet-600 hover:text-violet-800 transition-colors"
+                        >
+                          ✦ Sharpen
+                        </button>
+                      )}
+                      <button
+                        onClick={() => removeManifestoItem(item.id)}
+                        className="text-xs text-zinc-400 hover:text-red-500 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3 pt-4">
@@ -203,6 +271,26 @@ export default function Step0Voice(): React.JSX.Element {
                       placeholder="One line of supporting context."
                     />
                   </div>
+                  {manifestoPolishOpenId === item.id && (
+                    <VoicePolishPanel
+                      kind="manifesto"
+                      context={title}
+                      initialRough={
+                        item.statement
+                          ? `${item.statement}${item.detail ? "\n" + item.detail : ""}`
+                          : ""
+                      }
+                      onApply={(p) => {
+                        if (p.kind === "manifesto") {
+                          updateManifestoItem(item.id, {
+                            statement: p.statement,
+                            detail: p.detail,
+                          });
+                        }
+                      }}
+                      onClose={() => setManifestoPolishOpenId(null)}
+                    />
+                  )}
                 </CardContent>
               </Card>
             ))}

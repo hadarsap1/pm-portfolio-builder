@@ -101,6 +101,20 @@ interface GenerateProjectOutcomeRequest {
   solution: string;
 }
 
+/**
+ * Polish a rough free-form draft for one of the Voice fields.
+ * `kind` selects the prompt + response shape:
+ * - "tagline" → 3 candidate one-liners
+ * - "mission" → 1 polished body + a suggested title
+ * - "manifesto" → 1 sharpened belief statement + optional supporting line
+ */
+interface PolishVoiceRequest {
+  operation: "polish-voice";
+  kind: "tagline" | "mission" | "manifesto";
+  rough: string;       // user's free-form draft / bullet points
+  context?: string;    // optional: their title or domain to ground the model
+}
+
 type AIRequest =
   | ImproveBulletsRequest
   | GenerateSummaryRequest
@@ -109,7 +123,8 @@ type AIRequest =
   | TailorToJDRequest
   | CoverLetterRequest
   | InterviewPrepRequest
-  | GenerateProjectOutcomeRequest;
+  | GenerateProjectOutcomeRequest
+  | PolishVoiceRequest;
 
 // ── Prompts ───────────────────────────────────────────────────────
 
@@ -551,6 +566,127 @@ Write 1-2 sentences describing the measurable outcome of this initiative. Rules:
 
     const outcome = message.content[0]?.type === "text" ? message.content[0].text.trim() : "";
     return NextResponse.json({ outcome });
+  }
+
+  if (body.operation === "polish-voice") {
+    if (!body.rough?.trim()) {
+      return NextResponse.json({ error: "Need something to polish." }, { status: 400 });
+    }
+    if (tooLong(body.rough, LIMITS.shortField * 4)) {
+      return NextResponse.json(
+        { error: "Draft is too long — keep it under 2000 characters." },
+        { status: 413 }
+      );
+    }
+
+    const contextBlock = body.context?.trim()
+      ? `\nAuthor context: ${body.context.trim().slice(0, 200)}`
+      : "";
+
+    let prompt: string;
+    let maxTokens: number;
+    if (body.kind === "tagline") {
+      prompt = `You help product managers find their personal positioning line.${contextBlock}
+
+The author wrote this rough draft:
+"""
+${body.rough}
+"""
+
+Distill it into THREE distinct one-line positioning statements in the author's voice.
+
+Rules:
+- Each one ≤ 14 words
+- Plain, confident, specific. No buzzwords ("results-driven", "passionate", "synergize", "leverage", "drive impact", "data-driven", "cross-functional").
+- Punchy, not polished-corporate. The tone of someone you'd actually want to work with.
+- Each candidate offers a different angle (e.g. one about action, one about belief, one about identity).
+- No quotation marks.
+
+Return ONLY a JSON array of exactly 3 strings. No prose, no markdown, no keys.
+Example: ["I ship more than I slide.","Strategy is what survives the standup.","Built for the boring middle."]`;
+      maxTokens = 256;
+    } else if (body.kind === "mission") {
+      prompt = `You help product managers articulate the thing they care about beyond their job — a side initiative, a volunteer effort, a personal mission.${contextBlock}
+
+The author wrote this rough draft:
+"""
+${body.rough}
+"""
+
+Polish it into a short, sincere mission section.
+
+Rules:
+- Suggest a Title (≤ 5 words) that names the thing.
+- Write a Body of 2–3 short paragraphs (separated by blank lines), in the author's first-person voice.
+- Keep specific details from the rough draft (names, numbers, places). Don't invent specifics.
+- No clichés ("driven by passion", "make a difference", "give back"). Plain language only.
+- Total body under 120 words.
+
+Return ONLY a JSON object: { "title": "string", "body": "string with \\n\\n between paragraphs" }`;
+      maxTokens = 512;
+    } else {
+      // manifesto
+      prompt = `You help product managers sharpen their beliefs into manifesto-style statements.${contextBlock}
+
+The author wrote this rough draft of one belief:
+"""
+${body.rough}
+"""
+
+Rewrite as one punchy statement plus optional one-line supporting context.
+
+Rules:
+- Statement: ≤ 14 words. Declarative. Defendable. Specific to product/leadership/craft.
+- Detail: ≤ 18 words. Optional. Adds context or the "because". Leave empty if the statement stands alone.
+- No buzzwords ("data-driven", "synergy", "world-class", "best-in-class", "innovate").
+- No hedging ("I believe", "in my opinion"). State it.
+- No quotation marks.
+
+Return ONLY a JSON object: { "statement": "string", "detail": "string" }`;
+      maxTokens = 192;
+    }
+
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: maxTokens,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const text = message.content[0]?.type === "text" ? message.content[0].text.trim() : "";
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      return NextResponse.json(
+        { error: "AI response wasn't valid JSON. Try again." },
+        { status: 502 }
+      );
+    }
+
+    if (body.kind === "tagline") {
+      const candidates = Array.isArray(parsed)
+        ? (parsed as unknown[]).filter((c): c is string => typeof c === "string").slice(0, 3)
+        : [];
+      if (candidates.length === 0) {
+        return NextResponse.json({ error: "No candidates returned." }, { status: 502 });
+      }
+      return NextResponse.json({ kind: "tagline", candidates });
+    }
+    if (body.kind === "mission") {
+      const obj = parsed as { title?: unknown; body?: unknown };
+      return NextResponse.json({
+        kind: "mission",
+        title: typeof obj.title === "string" ? obj.title : "",
+        body: typeof obj.body === "string" ? obj.body : "",
+      });
+    }
+    // manifesto
+    const obj = parsed as { statement?: unknown; detail?: unknown };
+    return NextResponse.json({
+      kind: "manifesto",
+      statement: typeof obj.statement === "string" ? obj.statement : "",
+      detail: typeof obj.detail === "string" ? obj.detail : "",
+    });
   }
 
   return NextResponse.json({ error: "Unknown operation." }, { status: 400 });
