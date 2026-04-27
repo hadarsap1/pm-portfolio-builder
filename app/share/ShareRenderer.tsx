@@ -12,6 +12,7 @@ import RecommendationsSection from "@/components/portfolio/RecommendationsSectio
 import MissionSectionRender from "@/components/portfolio/MissionSection";
 import ManifestoSection from "@/components/portfolio/ManifestoSection";
 import NowSection from "@/components/portfolio/NowSection";
+import PassionsSection from "@/components/portfolio/PassionsSection";
 import { decodeSharePayload, type SharePayload } from "@/lib/share/payload";
 import { cn } from "@/lib/utils";
 
@@ -48,6 +49,19 @@ export default function ShareRenderer(): React.JSX.Element {
     if (!parsed) { setError(true); return; }
     setPayload(parsed);
     /* eslint-enable react-hooks/set-state-in-effect */
+
+    // Easter egg for the curious: drop a styled greeting in the dev console
+    // pointing them at the JSON API. Recruiters won't see it; people who
+    // open devtools out of habit will smile.
+    if (encoded && typeof console !== "undefined") {
+      const apiUrl = `${window.location.origin}/api/profile?d=${encoded}`;
+      console.log(
+        "%c👋 hi.%c if you're poking around: try %c" + apiUrl,
+        "font-size:14px;font-weight:bold;color:#7c3aed",
+        "color:#71717a",
+        "color:#18181b;background:#f4f4f5;padding:2px 6px;border-radius:4px;font-family:monospace"
+      );
+    }
   }, []);
 
   if (error) {
@@ -81,6 +95,7 @@ export default function ShareRenderer(): React.JSX.Element {
   const sectionOrder = strategy.sectionOrder ?? [
     "mission", "manifesto", "now",
     "metrics", "experience", "projects", "recommendations", "education", "skills",
+    "passions",
   ];
 
   const showMetrics = portfolio.globalMetrics.length > 0 && show("metrics");
@@ -93,9 +108,11 @@ export default function ShareRenderer(): React.JSX.Element {
   const mission = portfolio.mission ?? null;
   const manifesto = portfolio.manifesto ?? [];
   const now = portfolio.now ?? [];
+  const passions = portfolio.passions ?? [];
   const showMission = mission !== null && (mission.title || mission.body) && show("mission");
   const showManifesto = manifesto.length > 0 && show("manifesto");
   const showNow = now.length > 0 && show("now");
+  const showPassions = passions.length > 0 && show("passions");
 
   const sectionContent: Record<string, React.ReactNode> = {
     metrics: showMetrics ? <div key="metrics"><SectionHeading accent={accent}>By the Numbers</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></div> : null,
@@ -107,6 +124,7 @@ export default function ShareRenderer(): React.JSX.Element {
     mission: showMission ? <div key="mission"><SectionHeading accent={accent}>What I care about</SectionHeading><MissionSectionRender mission={mission} accent={accent} /></div> : null,
     manifesto: showManifesto ? <div key="manifesto"><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></div> : null,
     now: showNow ? <div key="now"><SectionHeading accent={accent}>Now</SectionHeading><NowSection now={now} accent={accent} /></div> : null,
+    passions: showPassions ? <div key="passions"><SectionHeading accent={accent}>What I do for love</SectionHeading><PassionsSection passions={passions} accent={accent} /></div> : null,
   };
 
   if (design.layoutStyle === "two-column") {
@@ -131,6 +149,7 @@ export default function ShareRenderer(): React.JSX.Element {
           {showProjects && <div><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></div>}
           {showRecommendations && <div><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></div>}
           {showEducation && <div><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></div>}
+          {showPassions && <div><SectionHeading accent={accent}>What I do for love</SectionHeading><PassionsSection passions={passions} accent={accent} /></div>}
         </main>
       </div>
     );

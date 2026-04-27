@@ -30,6 +30,7 @@ const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "recommendations",
   "education",
   "skills",
+  "passions",
 ];
 const SECTION_LABELS: Record<SectionKey, string> = {
   mission: "What I care about",
@@ -41,6 +42,7 @@ const SECTION_LABELS: Record<SectionKey, string> = {
   recommendations: "Recommendations",
   education: "Education",
   skills: "Skills",
+  passions: "What I do for love",
 };
 
 function SortableSection({ id }: { id: SectionKey }): React.JSX.Element {
@@ -79,6 +81,7 @@ const EMPHASIZED_SECTIONS: { value: EmphasizedSection; label: string }[] = [
   { value: "skills", label: "Skills" },
   { value: "education", label: "Education" },
   { value: "recommendations", label: "Recommendations" },
+  { value: "passions", label: "What I do for love" },
 ];
 
 export default function Step3Strategy(): React.JSX.Element {

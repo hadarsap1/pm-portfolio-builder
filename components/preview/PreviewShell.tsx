@@ -15,6 +15,7 @@ import RecommendationsSection from "@/components/portfolio/RecommendationsSectio
 import MissionSectionRender from "@/components/portfolio/MissionSection";
 import ManifestoSection from "@/components/portfolio/ManifestoSection";
 import NowSection from "@/components/portfolio/NowSection";
+import PassionsSection from "@/components/portfolio/PassionsSection";
 
 function SectionHeading({
   children,
@@ -33,8 +34,8 @@ function SectionHeading({
   );
 }
 
-// Voice-first ordering: identity modules (mission, manifesto, now) lead,
-// then the structured CV-shaped sections.
+// Voice-first ordering: identity modules lead, then CV-shaped sections,
+// then passions as the closer (the human note after the work history).
 const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "mission",
   "manifesto",
@@ -45,6 +46,7 @@ const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "recommendations",
   "education",
   "skills",
+  "passions",
 ];
 
 export default function PreviewShell(): React.JSX.Element {
@@ -58,6 +60,7 @@ export default function PreviewShell(): React.JSX.Element {
   const mission = usePortfolioStore((s) => s.portfolio.mission);
   const manifesto = usePortfolioStore((s) => s.portfolio.manifesto);
   const now = usePortfolioStore((s) => s.portfolio.now);
+  const passions = usePortfolioStore((s) => s.portfolio.passions);
   const globalMetrics = usePortfolioStore((s) => s.portfolio.globalMetrics);
   const design = usePortfolioStore((s) => s.design);
   const layoutStyle = design.layoutStyle;
@@ -78,6 +81,7 @@ export default function PreviewShell(): React.JSX.Element {
     !mission &&
     manifesto.length === 0 &&
     now.length === 0 &&
+    passions.length === 0 &&
     globalMetrics.length === 0;
 
   const showAll = emphasizedSections.length === 0;
@@ -92,6 +96,7 @@ export default function PreviewShell(): React.JSX.Element {
   const showMission = mission !== null && (mission.title || mission.body) && show("mission");
   const showManifesto = manifesto.length > 0 && show("manifesto");
   const showNow = now.length > 0 && show("now");
+  const showPassions = passions.length > 0 && show("passions");
 
   if (isEmpty) {
     return (
@@ -193,6 +198,13 @@ export default function PreviewShell(): React.JSX.Element {
               <EducationSection education={education} certifications={certifications} accent={accent} />
             </div>
           )}
+
+          {showPassions && (
+            <div>
+              <SectionHeading accent={accent}>What I do for love</SectionHeading>
+              <PassionsSection passions={passions} accent={accent} />
+            </div>
+          )}
         </main>
       </div>
     );
@@ -251,6 +263,12 @@ export default function PreviewShell(): React.JSX.Element {
       <div key="now">
         <SectionHeading accent={accent}>Now</SectionHeading>
         <NowSection now={now} accent={accent} />
+      </div>
+    ) : null,
+    passions: showPassions ? (
+      <div key="passions">
+        <SectionHeading accent={accent}>What I do for love</SectionHeading>
+        <PassionsSection passions={passions} accent={accent} />
       </div>
     ) : null,
   };

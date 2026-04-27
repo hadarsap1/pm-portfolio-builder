@@ -142,6 +142,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         { id: "n1", label: "Currently focused on", content: "Building a north-star metric framework for our self-serve funnel." },
         { id: "n2", label: "Reading", content: "\"Working in Public\" — Nadia Eghbal." },
       ],
+      passions: [
+        {
+          id: "ps1",
+          title: "Trail running",
+          body: "Most of my best product ideas show up between mile six and mile ten. I run twice a week with a small group, race once a year, and journal every long run.",
+          highlights: ["Tel Aviv half-marathon 2024", "Pacific Crest 50K 2023"],
+        },
+      ],
     },
   },
   {
@@ -259,6 +267,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
       ],
       now: [
         { id: "n1", label: "Currently focused on", content: "Validating a niche workflow tool with 20 design ops leads." },
+      ],
+      passions: [
+        {
+          id: "ps1",
+          title: "Sourdough",
+          body: "I bake every Sunday. The starter is older than my eldest kid. I've learned more about iteration from a stiff dough than from any framework.",
+          highlights: [],
+        },
       ],
     },
   },
@@ -379,6 +395,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
         { id: "n1", label: "Building", content: "A typed wrapper for our internal events API." },
         { id: "n2", label: "Reading", content: "\"Designing Data-Intensive Applications\" — Martin Kleppmann." },
       ],
+      passions: [
+        {
+          id: "ps1",
+          title: "Mechanical keyboards",
+          body: "Three custom builds and counting. Lubed Holy Pandas, Tofu60 case, FR4 plate. The hobby teaches you that small choices compound — same as code.",
+          highlights: ["Tofu60 / Holy Pandas", "Bakeneko 60 / Boba U4Ts"],
+        },
+      ],
     },
   },
   {
@@ -495,6 +519,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
       ],
       now: [
         { id: "n1", label: "Currently focused on", content: "Shipping our SOC 2 Type II readiness program." },
+      ],
+      passions: [
+        {
+          id: "ps1",
+          title: "Choral singing",
+          body: "I sing tenor in a community chamber choir. Two performances a year, weekly rehearsals. Listening to forty other voices and finding your own line is a useful skill in enterprise stakeholder meetings.",
+          highlights: ["Brahms Requiem 2023", "Britten Ceremony of Carols 2024"],
+        },
       ],
     },
   },

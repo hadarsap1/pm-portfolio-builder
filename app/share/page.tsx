@@ -42,10 +42,17 @@ export async function generateMetadata({
   // Pass the encoded payload through to the OG image route so it can
   // render the same name/title/summary on the card.
   const ogImagePath = `/share/og-card?d=${encodeURIComponent(d ?? "")}`;
+  const apiPath = `/api/profile?d=${encodeURIComponent(d ?? "")}`;
 
   return {
     title: headline,
     description: summary,
+    // <link rel="alternate" type="application/json"> is a standard hint that
+    // the same resource is available as JSON. Slack/LinkedIn ignore it;
+    // anyone who view-sources the page or runs `curl -I` will find the API.
+    alternates: {
+      types: { "application/json": apiPath },
+    },
     openGraph: {
       title: headline,
       description: summary,

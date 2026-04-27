@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VoicePolishPanel from "@/components/wizard/VoicePolishPanel";
-import type { ManifestoItem, NowItem } from "@/lib/types/portfolio";
+import type { ManifestoItem, NowItem, PassionItem } from "@/lib/types/portfolio";
 
 const NOW_PRESETS = [
   "Currently focused on",
@@ -26,6 +26,7 @@ export default function Step0Voice(): React.JSX.Element {
   const mission = usePortfolioStore((s) => s.portfolio.mission);
   const manifesto = usePortfolioStore((s) => s.portfolio.manifesto);
   const now = usePortfolioStore((s) => s.portfolio.now);
+  const passions = usePortfolioStore((s) => s.portfolio.passions);
   const aiAvailable = useAIAvailable();
 
   const setBasicInfo = usePortfolioStore((s) => s.setBasicInfo);
@@ -37,6 +38,9 @@ export default function Step0Voice(): React.JSX.Element {
   const addNowItem = usePortfolioStore((s) => s.addNowItem);
   const updateNowItem = usePortfolioStore((s) => s.updateNowItem);
   const removeNowItem = usePortfolioStore((s) => s.removeNowItem);
+  const addPassion = usePortfolioStore((s) => s.addPassion);
+  const updatePassion = usePortfolioStore((s) => s.updatePassion);
+  const removePassion = usePortfolioStore((s) => s.removePassion);
 
   // Track which polish panel is open. Tagline + mission are singletons;
   // manifesto polish is per-item, keyed by item id.
@@ -58,6 +62,32 @@ export default function Step0Voice(): React.JSX.Element {
       label: presetLabel ?? "Currently focused on",
       content: "",
     });
+  }
+
+  function handleAddPassion(seedTitle?: string): void {
+    addPassion({
+      id: crypto.randomUUID(),
+      title: seedTitle ?? "",
+      body: "",
+      highlights: [],
+    });
+  }
+
+  function handlePassionField(
+    id: string,
+    field: keyof PassionItem,
+    value: string
+  ): void {
+    updatePassion(id, { [field]: value } as Partial<PassionItem>);
+  }
+
+  function handlePassionHighlights(id: string, raw: string): void {
+    // Comma-separated → trim → drop empties
+    const items = raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    updatePassion(id, { highlights: items });
   }
 
   function handleManifestoField(
@@ -363,6 +393,94 @@ export default function Step0Voice(): React.JSX.Element {
                   >
                     Remove
                   </button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ── Passions ────────────────────────────────────────────── */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold text-zinc-900">What you do for love</h3>
+            <p className="text-sm text-zinc-500 leading-relaxed">
+              The thing that&apos;s yours outside of work. Cooking, trail running, watercolour, ham radio, the bees on the roof. Add as many as feel honest.
+            </p>
+          </div>
+          <Button size="sm" onClick={() => handleAddPassion()}>+ Add</Button>
+        </div>
+
+        {passions.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-zinc-200 py-6 px-4 space-y-3">
+            <p className="text-sm text-zinc-400 text-center">Quick-start with one of these:</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {["Cooking", "Trail running", "Watercolour", "Reading", "Music", "Travel"].map((seed) => (
+                <button
+                  key={seed}
+                  onClick={() => handleAddPassion(seed)}
+                  className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-600 hover:border-zinc-400 transition-colors"
+                >
+                  {seed}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {passions.map((p, i) => (
+              <Card key={p.id} size="sm">
+                <CardHeader className="border-b">
+                  <div className="flex items-center justify-between">
+                    <CardTitle>{p.title || `Passion ${i + 1}`}</CardTitle>
+                    <button
+                      onClick={() => removePassion(p.id)}
+                      className="text-xs text-zinc-400 hover:text-red-500 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3 pt-4">
+                  <div className="space-y-1.5">
+                    <Label>What is it</Label>
+                    <Input
+                      value={p.title}
+                      onChange={(e) => handlePassionField(p.id, "title", e.target.value)}
+                      placeholder="Trail running"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Why you do it / what it means</Label>
+                    <Textarea
+                      value={p.body}
+                      onChange={(e) => handlePassionField(p.id, "body", e.target.value)}
+                      placeholder="A short note. The first race that hooked you, who you run with, what you've learned about yourself."
+                      rows={3}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>
+                      Highlights{" "}
+                      <span className="text-zinc-400 font-normal">(comma-separated, optional)</span>
+                    </Label>
+                    <Input
+                      value={p.highlights.join(", ")}
+                      onChange={(e) => handlePassionHighlights(p.id, e.target.value)}
+                      placeholder="Mt. Whitney 2019, Tel Aviv half-marathon 2024, JFK 50-miler 2025"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>
+                      Link <span className="text-zinc-400 font-normal">(optional)</span>
+                    </Label>
+                    <Input
+                      value={p.link ?? ""}
+                      onChange={(e) => handlePassionField(p.id, "link", e.target.value)}
+                      placeholder="https://strava.com/athletes/…"
+                    />
+                  </div>
                 </CardContent>
               </Card>
             ))}

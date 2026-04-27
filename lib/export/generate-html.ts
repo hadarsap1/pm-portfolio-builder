@@ -3,6 +3,7 @@ import type { PortfolioData, DesignPreferences, StrategicFocus, SectionKey } fro
 const DEFAULT_SECTION_ORDER: SectionKey[] = [
   "mission", "manifesto", "now",
   "metrics", "experience", "projects", "recommendations", "education", "skills",
+  "passions",
 ];
 
 // ── Accent colours ────────────────────────────────────────────────
@@ -271,6 +272,43 @@ function renderNow(portfolio: PortfolioData, c: ColorConfig): string {
     .join("");
 }
 
+function renderPassions(portfolio: PortfolioData, c: ColorConfig): string {
+  const items = portfolio.passions ?? [];
+  if (items.length === 0) return "";
+  return items
+    .map((p) => {
+      const paragraphs = (p.body || "")
+        .split(/\n\s*\n/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map((para) => `<p style="margin:0 0 8px;font-size:14px;color:#52525b;line-height:1.6">${esc(para)}</p>`)
+        .join("");
+      const image = p.imageUrl
+        ? `<img src="${esc(p.imageUrl)}" alt="" style="height:96px;width:96px;border-radius:8px;object-fit:cover;border:1px solid #e4e4e7;float:left;margin-right:16px" />`
+        : "";
+      const highlights = p.highlights.length
+        ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${p.highlights
+            .map(
+              (h) =>
+                `<span style="display:inline-block;border:1px solid #e4e4e7;background:#fafafa;border-radius:999px;padding:2px 10px;font-size:12px;color:#52525b">${esc(h)}</span>`
+            )
+            .join("")}</div>`
+        : "";
+      const link = p.link
+        ? `<div style="margin-top:8px"><a href="${esc(p.link)}" target="_blank" rel="noopener noreferrer" style="font-size:12px;font-weight:500;color:${c.primary};text-decoration:none">More ↗</a></div>`
+        : "";
+      return `
+        <div style="margin-bottom:24px;overflow:hidden">
+          ${image}
+          <h3 style="margin:0 0 8px;font-size:15px;font-weight:600;color:#18181b">${esc(p.title || "Untitled")}</h3>
+          ${paragraphs}
+          ${highlights}
+          ${link}
+        </div>`;
+    })
+    .join("");
+}
+
 function renderRecommendations(
   portfolio: PortfolioData,
   c: ColorConfig
@@ -361,6 +399,7 @@ export function generatePortfolioHTML(
           if (key === "mission") return show("mission") ? section("What I care about", renderMission(portfolio, c)) : "";
           if (key === "manifesto") return show("manifesto") ? section("Manifesto", renderManifesto(portfolio, c)) : "";
           if (key === "now") return show("now") ? section("Now", renderNow(portfolio, c)) : "";
+          if (key === "passions") return show("passions") ? section("What I do for love", renderPassions(portfolio, c)) : "";
           return "";
         }).join("")}
       </div>`;
@@ -399,6 +438,7 @@ export function generatePortfolioHTML(
       ${show("projects") && portfolio.projects?.length ? section("Projects", renderProjects(portfolio, c)) : ""}
       ${show("recommendations") && portfolio.recommendations?.length ? section("Recommendations", renderRecommendations(portfolio, c)) : ""}
       ${show("education") && (portfolio.education.length || portfolio.certifications?.length) ? section("Education & Certifications", renderEducation(portfolio, c)) : ""}
+      ${show("passions") && portfolio.passions?.length ? section("What I do for love", renderPassions(portfolio, c)) : ""}
     </main>`;
 
   const body = `<div class="two-col" style="display:flex;min-height:100vh">${sidebar}${main}</div>`;

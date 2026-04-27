@@ -52,6 +52,9 @@ export function loadTemplate(
   template.portfolio.now.forEach((n) => {
     store.addNowItem({ ...n, id: crypto.randomUUID() });
   });
+  template.portfolio.passions.forEach((p) => {
+    store.addPassion({ ...p, id: crypto.randomUUID() });
+  });
 
   if (options.markComplete) {
     usePortfolioStore.getState().completeWizard();

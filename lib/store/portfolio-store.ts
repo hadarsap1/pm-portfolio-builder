@@ -13,6 +13,7 @@ import type {
   Metric,
   MissionSection,
   NowItem,
+  PassionItem,
   PortfolioData,
   PortfolioState,
   ProjectItem,
@@ -50,6 +51,7 @@ const DEFAULT_PORTFOLIO: PortfolioData = {
   mission: null,
   manifesto: [],
   now: [],
+  passions: [],
 };
 
 const DEFAULT_DESIGN: DesignPreferences = {
@@ -126,6 +128,11 @@ interface PortfolioStore extends PortfolioState {
   addNowItem: (item: NowItem) => void;
   updateNowItem: (id: string, data: Partial<NowItem>) => void;
   removeNowItem: (id: string) => void;
+
+  // Passions CRUD
+  addPassion: (item: PassionItem) => void;
+  updatePassion: (id: string, data: Partial<PassionItem>) => void;
+  removePassion: (id: string) => void;
 
   // Metrics
   setGlobalMetrics: (metrics: Metric[]) => void;
@@ -544,6 +551,45 @@ export const usePortfolioStore = create<PortfolioStore>()(
           "removeNowItem"
         ),
 
+      // ── Passions ──────────────────────────────────────────────────────────
+      addPassion: (item) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              passions: [...state.portfolio.passions, item],
+            },
+          }),
+          false,
+          "addPassion"
+        ),
+
+      updatePassion: (id, data) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              passions: state.portfolio.passions.map((p) =>
+                p.id === id ? { ...p, ...data } : p
+              ),
+            },
+          }),
+          false,
+          "updatePassion"
+        ),
+
+      removePassion: (id) =>
+        set(
+          (state) => ({
+            portfolio: {
+              ...state.portfolio,
+              passions: state.portfolio.passions.filter((p) => p.id !== id),
+            },
+          }),
+          false,
+          "removePassion"
+        ),
+
       // ── Metrics ───────────────────────────────────────────────────────────
       setGlobalMetrics: (metrics) =>
         set(
@@ -698,7 +744,7 @@ export const usePortfolioStore = create<PortfolioStore>()(
     }),
     {
       name: "pm-portfolio",
-      version: 3,
+      version: 4,
       partialize: (state) => ({
         portfolio: state.portfolio,
         design: state.design,
@@ -718,8 +764,9 @@ export const usePortfolioStore = create<PortfolioStore>()(
           mission: state.portfolio?.mission ?? null,
           manifesto: state.portfolio?.manifesto ?? [],
           now: state.portfolio?.now ?? [],
+          passions: state.portfolio?.passions ?? [],
         };
-        if (version < 3) {
+        if (version < 4) {
           return {
             portfolio,
             design: { ...DEFAULT_DESIGN, ...state.design },

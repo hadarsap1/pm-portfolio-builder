@@ -85,6 +85,7 @@ export default function ResumeImportModal({ open, onClose }: Props): React.JSX.E
         mission: null,
         manifesto: [],
         now: [],
+        passions: [],
       };
 
       usePortfolioStore.setState({ portfolio });

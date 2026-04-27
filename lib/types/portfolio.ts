@@ -47,6 +47,20 @@ export interface NowItem {
   content: string;
 }
 
+/**
+ * Things you do outside of work that make you you. A trail-running log,
+ * a cookbook collection, a side band, the bees on the roof. Each entry
+ * stands on its own; multiple entries render as a vertical stack.
+ */
+export interface PassionItem {
+  id: string;
+  title: string;          // "Trail running", "Sourdough", "Watercolour"
+  body: string;           // 1–2 short paragraphs of context
+  highlights: string[];   // optional list — races run, dishes mastered, recent paintings
+  imageUrl?: string;      // optional photo (base64 or remote URL)
+  link?: string;          // optional learn-more URL (a Strava profile, a recipe blog, etc.)
+}
+
 export interface Metric {
   id: string;
   label: string;    // e.g. "Revenue Growth"
@@ -127,10 +141,10 @@ export interface DesignPreferences {
 export type Superpower = "growth" | "zero-to-one" | "technical";
 export type EmphasizedSection =
   | "metrics" | "experience" | "projects" | "skills" | "education" | "recommendations"
-  | "mission" | "manifesto" | "now";
+  | "mission" | "manifesto" | "now" | "passions";
 export type SectionKey =
   | "metrics" | "experience" | "projects" | "education" | "skills" | "recommendations"
-  | "mission" | "manifesto" | "now";
+  | "mission" | "manifesto" | "now" | "passions";
 
 export interface StrategicFocus {
   superpower: Superpower;
@@ -155,6 +169,7 @@ export interface PortfolioData {
   mission: MissionSection | null;
   manifesto: ManifestoItem[];
   now: NowItem[];
+  passions: PassionItem[];
 }
 
 // ── AI Scoring (not persisted) ────────────────────────────────────
