@@ -50,7 +50,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   return NextResponse.json(
     {
       _meta: HELLO_BODY,
-      schemaVersion: 3,
+      schemaVersion: 4,
       generator: "pm-portfolio-builder",
       ...payload,
     },

@@ -38,8 +38,10 @@ const STYLE_BASELINE =
 
 function buildHeroPrompt(voice: BespokeRequest["voice"], theme: string): string {
   const themeNote = ACCENT_NOTE[theme] ?? ACCENT_NOTE.minimal;
+  // All voice strings sliced before interpolation — prevents prompt-injection
+  // through long crafted user inputs and keeps model spend bounded.
   const taglineLine = voice.tagline?.trim()
-    ? `\nThe author's one-line positioning is: "${voice.tagline.trim()}"`
+    ? `\nThe author's one-line positioning is: "${voice.tagline.trim().slice(0, 200)}"`
     : "";
   const missionLine = voice.mission?.trim()
     ? `\nWhat they care about: "${voice.mission.trim().slice(0, 400)}"`
@@ -58,7 +60,10 @@ Output a single image. No watermark, no signature, no caption text.`;
 
 function buildPassionPrompt(voice: BespokeRequest["voice"], theme: string): string {
   const themeNote = ACCENT_NOTE[theme] ?? ACCENT_NOTE.minimal;
-  const title = voice.passionTitle?.trim() || "the subject";
+  // Title cap: 100 chars is enough for any real passion ("Trail running",
+  // "Mechanical keyboards", "Sourdough"). Longer is almost certainly a
+  // prompt-injection attempt or accidental paste.
+  const title = voice.passionTitle?.trim().slice(0, 100) || "the subject";
   const detail = voice.passionBody?.trim()
     ? ` Context: "${voice.passionBody.trim().slice(0, 300)}"`
     : "";

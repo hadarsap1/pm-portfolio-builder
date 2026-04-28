@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import type {
   BasicInfo,
   CertificationItem,
@@ -745,40 +745,64 @@ export const usePortfolioStore = create<PortfolioStore>()(
     {
       name: "pm-portfolio",
       version: 4,
+      // Wrap localStorage so a QuotaExceededError doesn't silently drop the
+      // user's session. Bespoke imagery + project screenshots can push past
+      // Safari's 5MB limit; we surface it with a console warning + a one-shot
+      // toast notice via window event so UI can listen.
+      storage: createJSONStorage(() => {
+        if (typeof window === "undefined") return localStorage;
+        return {
+          getItem: (key: string): string | null => window.localStorage.getItem(key),
+          setItem: (key: string, value: string): void => {
+            try {
+              window.localStorage.setItem(key, value);
+            } catch (err) {
+              if (err instanceof Error && /quota/i.test(err.name + err.message)) {
+                console.warn(
+                  "[pm-portfolio] localStorage quota exceeded — your portfolio is too large to persist locally. Try removing some screenshots or regenerating bespoke imagery less often."
+                );
+                window.dispatchEvent(new CustomEvent("pm-portfolio:quota-exceeded"));
+                return;
+              }
+              throw err;
+            }
+          },
+          removeItem: (key: string): void => window.localStorage.removeItem(key),
+        };
+      }),
       partialize: (state) => ({
         portfolio: state.portfolio,
         design: state.design,
         strategy: state.strategy,
         wizard: state.wizard,
       }),
-      migrate: (persisted: unknown, version: number): PortfolioState => {
+      migrate: (persisted: unknown): PortfolioState => {
         const state = persisted as Partial<PortfolioState>;
-        // Each migration is additive — backfill collections added in that
-        // phase so spread-based reducers don't crash on undefined.
-        const portfolio = {
-          ...DEFAULT_PORTFOLIO,
-          ...state.portfolio,
-          projects: state.portfolio?.projects ?? [],
-          certifications: state.portfolio?.certifications ?? [],
-          recommendations: state.portfolio?.recommendations ?? [],
-          mission: state.portfolio?.mission ?? null,
-          manifesto: state.portfolio?.manifesto ?? [],
-          now: state.portfolio?.now ?? [],
-          passions: state.portfolio?.passions ?? [],
+        // Always rebuild from defaults + persisted values — every collection
+        // we've added in any phase gets a defensive `?? []` so a corrupt or
+        // mid-version state can't crash the spread-based reducers
+        // (addProject / addPassion / addManifestoItem). Cheaper than running
+        // version checks and a safer default — applies on every read.
+        return {
+          portfolio: {
+            ...DEFAULT_PORTFOLIO,
+            ...state.portfolio,
+            projects: state.portfolio?.projects ?? [],
+            certifications: state.portfolio?.certifications ?? [],
+            recommendations: state.portfolio?.recommendations ?? [],
+            mission: state.portfolio?.mission ?? null,
+            manifesto: state.portfolio?.manifesto ?? [],
+            now: state.portfolio?.now ?? [],
+            passions: state.portfolio?.passions ?? [],
+          },
+          design: { ...DEFAULT_DESIGN, ...state.design },
+          strategy: { ...DEFAULT_STRATEGY, ...state.strategy },
+          wizard: {
+            ...DEFAULT_STATE.wizard,
+            ...state.wizard,
+            totalSteps: 9,
+          },
         };
-        if (version < 4) {
-          return {
-            portfolio,
-            design: { ...DEFAULT_DESIGN, ...state.design },
-            strategy: { ...DEFAULT_STRATEGY, ...state.strategy },
-            wizard: {
-              ...DEFAULT_STATE.wizard,
-              ...state.wizard,
-              totalSteps: 9,
-            },
-          };
-        }
-        return state as PortfolioState;
       },
     }
   ),

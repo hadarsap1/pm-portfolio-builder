@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 
 interface TypewriterProps {
@@ -29,6 +29,10 @@ export default function Typewriter({
   const reduced = useReducedMotion();
   const codepoints = React.useMemo(() => Array.from(text), [text]);
   const [count, setCount] = useState(reduced ? codepoints.length : 0);
+  // Track every scheduled timer so cleanup cancels the whole chain when
+  // `text` changes mid-animation. Without this, the previous chain keeps
+  // firing setCount with stale codepoints, briefly flashing old characters.
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (reduced) {
@@ -37,14 +41,19 @@ export default function Typewriter({
     }
     setCount(0);
     let i = 0;
-    const startTimer = window.setTimeout(function tick() {
+    timerRef.current = setTimeout(function tick() {
       i++;
       setCount(i);
       if (i < codepoints.length) {
-        window.setTimeout(tick, speed);
+        timerRef.current = setTimeout(tick, speed);
       }
     }, startDelay);
-    return () => window.clearTimeout(startTimer);
+    return () => {
+      if (timerRef.current !== null) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [codepoints, speed, startDelay, reduced]);
 
   const visible = codepoints.slice(0, count).join("");
