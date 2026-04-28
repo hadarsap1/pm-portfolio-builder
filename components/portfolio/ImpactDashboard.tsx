@@ -13,6 +13,8 @@ import {
 } from "recharts";
 import type { Metric } from "@/lib/types/portfolio";
 import type { AccentConfig } from "@/lib/utils/accent";
+import CountUp from "@/components/portfolio/motion/CountUp";
+import Stagger from "@/components/portfolio/motion/Stagger";
 
 interface ImpactDashboardProps {
   metrics: Metric[];
@@ -43,19 +45,20 @@ export default function ImpactDashboard({ metrics, accent }: ImpactDashboardProp
 
   return (
     <div className="space-y-4">
-      {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-3">
+      {/* Stat cards — staggered reveal + animated count-up on each value */}
+      <Stagger className="grid grid-cols-3 gap-3" step={0.1}>
         {metrics.map((m) => (
           <div
             key={m.id}
             className={cn(
-              "rounded-xl border p-4 bg-white ring-1",
+              "rounded-xl border p-4 bg-white ring-1 transition-all duration-300",
+              "hover:-translate-y-0.5 hover:shadow-sm",
               accent.border,
               accent.ring
             )}
           >
             <p className={cn("text-2xl font-bold tabular-nums", accent.heading)}>
-              {m.value || "—"}
+              {m.value ? <CountUp value={m.value} /> : "—"}
             </p>
             <p className="mt-0.5 text-xs font-medium text-zinc-600">{m.label || "Label"}</p>
             {m.context && (
@@ -63,7 +66,7 @@ export default function ImpactDashboard({ metrics, accent }: ImpactDashboardProp
             )}
           </div>
         ))}
-      </div>
+      </Stagger>
 
       {/* Recharts bar chart — only when 2+ parseable values exist */}
       {showChart && (

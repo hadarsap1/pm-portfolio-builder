@@ -4,6 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import type { ManifestoItem } from "@/lib/types/portfolio";
 import type { AccentConfig } from "@/lib/utils/accent";
+import Stagger from "@/components/portfolio/motion/Stagger";
 
 interface ManifestoSectionProps {
   manifesto: ManifestoItem[];
@@ -16,10 +17,12 @@ export default function ManifestoSection({
 }: ManifestoSectionProps): React.JSX.Element | null {
   if (manifesto.length === 0) return null;
 
+  // Stagger renders each belief in sequence — feels like a thinker laying
+  // out an argument rather than a static list.
   return (
-    <ol className="space-y-3 list-none">
+    <Stagger className="space-y-3" step={0.12}>
       {manifesto.map((item, i) => (
-        <li key={item.id} className="flex gap-4 items-start">
+        <div key={item.id} className="flex gap-4 items-start">
           <span
             className={cn(
               "text-2xl font-bold leading-none tabular-nums shrink-0 w-7",
@@ -40,8 +43,8 @@ export default function ManifestoSection({
               </p>
             )}
           </div>
-        </li>
+        </div>
       ))}
-    </ol>
+    </Stagger>
   );
 }

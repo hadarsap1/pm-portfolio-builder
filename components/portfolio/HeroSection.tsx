@@ -4,6 +4,8 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import type { BasicInfo } from "@/lib/types/portfolio";
 import type { AccentConfig } from "@/lib/utils/accent";
+import Typewriter from "@/components/portfolio/motion/Typewriter";
+import ParallaxAvatar from "@/components/portfolio/motion/ParallaxAvatar";
 // AccentConfig.customHex is applied as inline style when present
 
 interface HeroSectionProps {
@@ -29,11 +31,10 @@ export default function HeroSection({
   return (
     <div>
       {basicInfo.avatarUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <ParallaxAvatar
           src={basicInfo.avatarUrl}
           alt={basicInfo.name || "Avatar"}
-          className="h-16 w-16 rounded-full object-cover mb-4 ring-2 ring-zinc-100"
+          className="h-16 w-16 mb-4"
         />
       )}
       <h1
@@ -48,7 +49,8 @@ export default function HeroSection({
 
       {/* Personal positioning line — drops below title in both variants and
           carries more weight than the corporate "summary" paragraph. This is
-          the "Some people talk about the long game. I run it." slot. */}
+          the "Some people talk about the long game. I run it." slot. The
+          Typewriter is the single most "this is alive" cue in the hero. */}
       {basicInfo.tagline && (
         <p
           className={cn(
@@ -56,7 +58,7 @@ export default function HeroSection({
             variant === "full" ? "text-xl text-zinc-900" : "text-base text-zinc-900"
           )}
         >
-          {basicInfo.tagline}
+          <Typewriter text={basicInfo.tagline} />
         </p>
       )}
 

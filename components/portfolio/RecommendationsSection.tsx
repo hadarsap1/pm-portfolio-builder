@@ -24,7 +24,8 @@ export default function RecommendationsSection({
           <figure
             key={rec.id}
             className={cn(
-              "rounded-xl border bg-zinc-50/60 p-4",
+              "rounded-xl border bg-zinc-50/60 p-4 transition-all duration-300",
+              "hover:-translate-y-0.5 hover:bg-white hover:shadow-sm",
               accent.border
             )}
           >

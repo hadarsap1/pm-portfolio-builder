@@ -17,7 +17,11 @@ export default function ProjectsSection({
       {projects.map((p) => (
         <div
           key={p.id}
-          className={cn("rounded-xl border bg-white overflow-hidden", accent.border)}
+          className={cn(
+            "rounded-xl border bg-white overflow-hidden transition-all duration-300",
+            "hover:-translate-y-0.5 hover:shadow-md",
+            accent.border
+          )}
         >
           {/* Optional screenshot — full-bleed at the top of the card */}
           {p.imageUrl && (

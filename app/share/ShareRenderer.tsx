@@ -15,6 +15,7 @@ import MissionSectionRender from "@/components/portfolio/MissionSection";
 import ManifestoSection from "@/components/portfolio/ManifestoSection";
 import NowSection from "@/components/portfolio/NowSection";
 import PassionsSection from "@/components/portfolio/PassionsSection";
+import Reveal from "@/components/portfolio/motion/Reveal";
 import { decodeSharePayload, type SharePayload } from "@/lib/share/payload";
 import { cn } from "@/lib/utils";
 
@@ -119,17 +120,20 @@ export default function ShareRenderer(): React.JSX.Element {
   const showNow = now.length > 0 && show("now");
   const showPassions = passions.length > 0 && show("passions");
 
+  // Each section gets a Reveal wrapper so it fades + slides in as the
+  // visitor scrolls. The whole portfolio reads as a sequence rather
+  // than a static page dump.
   const sectionContent: Record<string, React.ReactNode> = {
-    metrics: showMetrics ? <div key="metrics"><SectionHeading accent={accent}>By the Numbers</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></div> : null,
-    experience: showExperience ? <div key="experience"><SectionHeading accent={accent}>Experience</SectionHeading><Experience experience={portfolio.experience} accent={accent} /></div> : null,
-    projects: showProjects ? <div key="projects"><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></div> : null,
-    education: showEducation ? <div key="education"><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></div> : null,
-    skills: showSkills ? <div key="skills"><SectionHeading accent={accent}>Skills</SectionHeading><SkillsSection skills={portfolio.skills} accent={accent} /></div> : null,
-    recommendations: showRecommendations ? <div key="recommendations"><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></div> : null,
-    mission: showMission ? <div key="mission"><SectionHeading accent={accent}>What I care about</SectionHeading><MissionSectionRender mission={mission} accent={accent} /></div> : null,
-    manifesto: showManifesto ? <div key="manifesto"><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></div> : null,
-    now: showNow ? <div key="now"><SectionHeading accent={accent}>Now</SectionHeading><NowSection now={now} accent={accent} /></div> : null,
-    passions: showPassions ? <div key="passions"><SectionHeading accent={accent}>What I do for love</SectionHeading><PassionsSection passions={passions} accent={accent} /></div> : null,
+    metrics: showMetrics ? <Reveal key="metrics"><SectionHeading accent={accent}>By the Numbers</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></Reveal> : null,
+    experience: showExperience ? <Reveal key="experience"><SectionHeading accent={accent}>Experience</SectionHeading><Experience experience={portfolio.experience} accent={accent} /></Reveal> : null,
+    projects: showProjects ? <Reveal key="projects"><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></Reveal> : null,
+    education: showEducation ? <Reveal key="education"><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></Reveal> : null,
+    skills: showSkills ? <Reveal key="skills"><SectionHeading accent={accent}>Skills</SectionHeading><SkillsSection skills={portfolio.skills} accent={accent} /></Reveal> : null,
+    recommendations: showRecommendations ? <Reveal key="recommendations"><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></Reveal> : null,
+    mission: showMission ? <Reveal key="mission"><SectionHeading accent={accent}>What I care about</SectionHeading><MissionSectionRender mission={mission} accent={accent} /></Reveal> : null,
+    manifesto: showManifesto ? <Reveal key="manifesto"><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></Reveal> : null,
+    now: showNow ? <Reveal key="now"><SectionHeading accent={accent}>Now</SectionHeading><NowSection now={now} accent={accent} /></Reveal> : null,
+    passions: showPassions ? <Reveal key="passions"><SectionHeading accent={accent}>What I do for love</SectionHeading><PassionsSection passions={passions} accent={accent} /></Reveal> : null,
   };
 
   if (design.layoutStyle === "two-column") {
@@ -146,15 +150,15 @@ export default function ShareRenderer(): React.JSX.Element {
           {showSkills && <div><SectionHeading accent={accent}>Skills</SectionHeading><SkillsSection skills={portfolio.skills} accent={accent} /></div>}
         </aside>
         <main className="flex-1 px-8 py-8 space-y-8">
-          {showManifesto && <div><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></div>}
-          {showMission && <div><SectionHeading accent={accent}>What I care about</SectionHeading><MissionSectionRender mission={mission} accent={accent} /></div>}
-          {showNow && <div><SectionHeading accent={accent}>Now</SectionHeading><NowSection now={now} accent={accent} /></div>}
-          {showMetrics && <div><SectionHeading accent={accent}>Impact</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></div>}
-          {showExperience && <div><SectionHeading accent={accent}>Experience</SectionHeading><Experience experience={portfolio.experience} accent={accent} /></div>}
-          {showProjects && <div><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></div>}
-          {showRecommendations && <div><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></div>}
-          {showEducation && <div><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></div>}
-          {showPassions && <div><SectionHeading accent={accent}>What I do for love</SectionHeading><PassionsSection passions={passions} accent={accent} /></div>}
+          {showManifesto && <Reveal><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></Reveal>}
+          {showMission && <Reveal><SectionHeading accent={accent}>What I care about</SectionHeading><MissionSectionRender mission={mission} accent={accent} /></Reveal>}
+          {showNow && <Reveal><SectionHeading accent={accent}>Now</SectionHeading><NowSection now={now} accent={accent} /></Reveal>}
+          {showMetrics && <Reveal><SectionHeading accent={accent}>Impact</SectionHeading><ImpactDashboard metrics={portfolio.globalMetrics} accent={accent} /></Reveal>}
+          {showExperience && <Reveal><SectionHeading accent={accent}>Experience</SectionHeading><Experience experience={portfolio.experience} accent={accent} /></Reveal>}
+          {showProjects && <Reveal><SectionHeading accent={accent}>Projects</SectionHeading><ProjectsSection projects={portfolio.projects ?? []} accent={accent} /></Reveal>}
+          {showRecommendations && <Reveal><SectionHeading accent={accent}>Recommendations</SectionHeading><RecommendationsSection recommendations={recommendations} accent={accent} /></Reveal>}
+          {showEducation && <Reveal><SectionHeading accent={accent}>Education</SectionHeading><EducationSection education={portfolio.education} certifications={portfolio.certifications ?? []} accent={accent} /></Reveal>}
+          {showPassions && <Reveal><SectionHeading accent={accent}>What I do for love</SectionHeading><PassionsSection passions={passions} accent={accent} /></Reveal>}
         </main>
       </div>
     );
