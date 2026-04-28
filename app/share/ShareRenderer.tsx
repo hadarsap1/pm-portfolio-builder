@@ -140,14 +140,22 @@ export default function ShareRenderer(): React.JSX.Element {
     return (
       <div className={cn("flex min-h-screen text-sm", isTerminal && "font-mono")}>
         <aside className={cn("w-[34%] shrink-0 border-e px-6 py-8 space-y-7 bg-white", accent.border)}>
-          <Hero basicInfo={portfolio.basicInfo} accent={accent} variant="header" />
+          {/* Hero reveals first; downstream sidebar blocks stagger after.
+              Without these wrappers the sidebar appeared instantly while
+              the main column faded in — broke the composed feel. */}
+          <Reveal><Hero basicInfo={portfolio.basicInfo} accent={accent} variant="header" /></Reveal>
           {portfolio.basicInfo.summary && (
-            <div>
+            <Reveal delay={0.1}>
               <SectionHeading accent={accent}>About</SectionHeading>
               <p className="text-xs text-zinc-600 leading-relaxed">{portfolio.basicInfo.summary}</p>
-            </div>
+            </Reveal>
           )}
-          {showSkills && <div><SectionHeading accent={accent}>Skills</SectionHeading><SkillsSection skills={portfolio.skills} accent={accent} /></div>}
+          {showSkills && (
+            <Reveal delay={0.2}>
+              <SectionHeading accent={accent}>Skills</SectionHeading>
+              <SkillsSection skills={portfolio.skills} accent={accent} />
+            </Reveal>
+          )}
         </aside>
         <main className="flex-1 px-8 py-8 space-y-8">
           {showManifesto && <Reveal><SectionHeading accent={accent}>Manifesto</SectionHeading><ManifestoSection manifesto={manifesto} accent={accent} /></Reveal>}

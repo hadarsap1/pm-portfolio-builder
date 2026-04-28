@@ -71,11 +71,15 @@ export default function TerminalHero({
         )}
       </div>
 
-      {/* Tagline gets to be the headline — it's already a one-liner */}
+      {/* Tagline as a shell-output line — keeps the terminal register. The
+          previous blockquote treatment broke the metaphor mid-stream. */}
       {basicInfo.tagline && (
-        <div className="rounded border-s-2 border-zinc-300 ps-3 py-1 text-zinc-900 font-semibold text-base leading-snug">
-          {basicInfo.tagline}
-        </div>
+        <p className="text-zinc-900 font-semibold text-base leading-snug">
+          <span className={cn("me-1", accent.heading)} style={accentStyle} aria-hidden>
+            &gt;
+          </span>
+          &ldquo;{basicInfo.tagline}&rdquo;
+        </p>
       )}
 
       {/* Contact links rendered as command-style flags */}

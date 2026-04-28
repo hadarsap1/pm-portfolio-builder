@@ -23,12 +23,18 @@ export default function PassionsSection({
           .split(/\n\s*\n/)
           .map((s) => s.trim())
           .filter(Boolean);
+        // When there's no image, render a single-column row instead of a
+        // two-column grid with a phantom 96px spacer. Otherwise the text
+        // appears unexplainedly indented.
         return (
           <article
             key={p.id}
-            className="grid grid-cols-1 sm:grid-cols-[96px_1fr] gap-4 items-start"
+            className={cn(
+              "grid gap-4 items-start grid-cols-1",
+              p.imageUrl && "sm:grid-cols-[96px_1fr]"
+            )}
           >
-            {p.imageUrl ? (
+            {p.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={p.imageUrl}
@@ -38,9 +44,6 @@ export default function PassionsSection({
                   accent.border
                 )}
               />
-            ) : (
-              // Spacer to keep alignment when there's no image — only on sm+
-              <div className="hidden sm:block" />
             )}
             <div className="space-y-2 min-w-0">
               <h3 className="text-base font-semibold text-zinc-900">
