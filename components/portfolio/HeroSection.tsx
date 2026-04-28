@@ -30,6 +30,21 @@ export default function HeroSection({
 
   return (
     <div>
+      {/* Bespoke hero illustration — full-width feature image above the
+          name when present. Carries the visual identity of the portfolio.
+          Only renders in the full variant; sidebar (header) stays text. */}
+      {basicInfo.heroImageUrl && variant === "full" && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={basicInfo.heroImageUrl}
+          alt=""
+          className={cn(
+            "w-full aspect-[16/9] object-cover rounded-2xl mb-6 border",
+            accent.border
+          )}
+        />
+      )}
+
       {basicInfo.avatarUrl && (
         <ParallaxAvatar
           src={basicInfo.avatarUrl}

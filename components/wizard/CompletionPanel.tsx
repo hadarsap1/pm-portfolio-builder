@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import PortfolioScoreCard from "@/components/wizard/PortfolioScoreCard";
 import AnalyticsDashboard from "@/components/wizard/AnalyticsDashboard";
 import InterviewPrepCard from "@/components/wizard/InterviewPrepCard";
+import BespokePanel from "@/components/wizard/BespokePanel";
 
 function buildPayload() {
   const s = usePortfolioStore.getState();
@@ -17,9 +18,23 @@ function buildPayload() {
 
 function buildShareUrl(): string {
   const s = usePortfolioStore.getState();
-  // Omit avatarUrl from shared payload to keep URL manageable
+  // Strip everything heavy from the share payload — share URLs have a hard
+  // practical ceiling (~16KB for some servers) and base64 images blow it.
+  // Bespoke imagery lives on in the user's own preview and exported HTML.
   const payload = {
-    portfolio: { ...s.portfolio, basicInfo: { ...s.portfolio.basicInfo, avatarUrl: undefined } },
+    portfolio: {
+      ...s.portfolio,
+      basicInfo: {
+        ...s.portfolio.basicInfo,
+        avatarUrl: undefined,
+        heroImageUrl: undefined,
+      },
+      mission: s.portfolio.mission
+        ? { ...s.portfolio.mission, imageUrl: undefined }
+        : null,
+      passions: s.portfolio.passions.map((p) => ({ ...p, imageUrl: undefined })),
+      projects: s.portfolio.projects.map((p) => ({ ...p, imageUrl: undefined })),
+    },
     design: s.design,
     strategy: s.strategy,
   };
@@ -204,6 +219,10 @@ export default function CompletionPanel(): React.JSX.Element {
           </div>
         </div>
       )}
+
+      {/* Bespoke imagery — the magic moment. Surfaced near the top so users
+          see it before scrolling past the AI helpers. */}
+      <BespokePanel />
 
       {/* AI Score */}
       {aiAvailable && (

@@ -395,6 +395,7 @@ export function generatePortfolioHTML(
 
         <!-- Hero -->
         <div style="border-bottom:1px solid #e4e4e7;padding-bottom:28px;margin-bottom:36px">
+          ${basicInfo.heroImageUrl ? `<img src="${esc(basicInfo.heroImageUrl)}" alt="" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;margin:0 0 24px;display:block;border:1px solid #e4e4e7" />` : ""}
           ${basicInfo.avatarUrl ? `<img src="${esc(basicInfo.avatarUrl)}" alt="${esc(basicInfo.name || "")}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;margin-bottom:16px;border:2px solid #e4e4e7" />` : ""}
           <h1 style="font-size:32px;font-weight:700;letter-spacing:-.02em;color:${c.primary};margin:0">${esc(basicInfo.name || "Your Name")}</h1>
           <p style="font-size:16px;color:#71717a;font-weight:500;margin:4px 0 0">${esc(basicInfo.title || "")}</p>

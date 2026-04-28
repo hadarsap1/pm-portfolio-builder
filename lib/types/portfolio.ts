@@ -12,6 +12,11 @@ export interface BasicInfo {
   // e.g. "Some people talk about the long game. I run it."
   tagline?: string;
   avatarUrl?: string; // base64 data URL or remote URL
+  // AI-generated hero illustration tied to this portfolio's voice.
+  // Rendered as an editorial backdrop in the hero. Base64 data URL.
+  // Stripped from share URL payload to keep links lean — only shows in
+  // the local preview and exported HTML.
+  heroImageUrl?: string;
 }
 
 // ── Identity / personality modules ────────────────────────────────
