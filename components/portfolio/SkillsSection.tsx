@@ -36,6 +36,17 @@ export default function SkillsSection({ skills, accent }: SkillsSectionProps): R
 
   return (
     <div className="space-y-3">
+      {anySelected && (
+        <div className="flex items-center justify-end">
+          <button
+            type="button"
+            onClick={() => setSelected(new Set())}
+            className="text-[10px] uppercase tracking-widest font-semibold text-zinc-400 hover:text-zinc-700 transition-colors"
+          >
+            Clear filter
+          </button>
+        </div>
+      )}
       {skills.map((cat) => (
         <div key={cat.id}>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-1.5">
@@ -55,6 +66,7 @@ export default function SkillsSection({ skills, accent }: SkillsSectionProps): R
                   transition={{ type: "spring", stiffness: 380, damping: 24 }}
                   className={cn(
                     "rounded-full px-2.5 py-0.5 text-xs font-medium cursor-pointer transition-opacity",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-zinc-900",
                     accent.badge,
                     isSelected && "ring-2 ring-offset-1 ring-zinc-900",
                     dimmed && "opacity-40"

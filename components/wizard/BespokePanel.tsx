@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "motion/react";
 import { toast } from "sonner";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { Button } from "@/components/ui/button";
@@ -169,16 +170,21 @@ export default function BespokePanel(): React.JSX.Element {
       {step.kind === "done" && (
         <div className="space-y-2">
           {heroImageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            // The thumbnail is the payoff for a 30–90s wait — earn the
+            // moment with a scale + fade entrance instead of pop-in.
+            <motion.img
               src={heroImageUrl}
               alt="Your bespoke hero"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               className={cn("w-full rounded-lg border", "border-violet-200")}
             />
           )}
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs text-emerald-700 font-medium">✓ Done</p>
             <button
+              type="button"
               onClick={handleRegenerateHero}
               className="text-[11px] text-zinc-500 hover:text-zinc-900 underline underline-offset-2 transition-colors"
             >
