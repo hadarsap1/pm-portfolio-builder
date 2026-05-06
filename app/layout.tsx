@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://pm-portfolio-builder.vercel.app"),
   title: "PM Portfolio Builder",
   description: "Build and deploy your PM portfolio in minutes.",
   openGraph: {

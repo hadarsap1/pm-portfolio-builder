@@ -194,8 +194,17 @@ export default function Home(): React.JSX.Element {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-100 py-8 text-center text-xs text-zinc-400">
+      <footer className="border-t border-zinc-100 py-8 text-center text-xs text-zinc-400 space-y-2">
         <p>PM Portfolio Builder · Built with Next.js, Claude AI, and Tailwind</p>
+        <p>
+          Your data stays in your browser.{" "}
+          <a
+            href="mailto:hadarsap@gmail.com?subject=PM Portfolio Builder feedback"
+            className="underline underline-offset-2 hover:text-zinc-600 transition-colors"
+          >
+            Send feedback
+          </a>
+        </p>
       </footer>
     </main>
   );
