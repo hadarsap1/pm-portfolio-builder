@@ -58,6 +58,7 @@ const DEFAULT_DESIGN: DesignPreferences = {
   colorTheme: "minimal",
   layoutStyle: "two-column",
   fontStyle: "modern",
+  metricsDensity: "full",
 };
 
 const DEFAULT_STRATEGY: StrategicFocus = {

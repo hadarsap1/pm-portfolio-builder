@@ -143,12 +143,15 @@ export type FontStyle = "modern" | "classic" | "technical";
  */
 export type PresentationMode = "standard" | "terminal";
 
+export type MetricsDensity = "full" | "compact";
+
 export interface DesignPreferences {
   colorTheme: ColorTheme;
   layoutStyle: LayoutStyle;
   fontStyle: FontStyle;
   presentationMode?: PresentationMode;
   customAccentColor?: string; // hex, e.g. "#7c3aed" — overrides colorTheme accent
+  metricsDensity?: MetricsDensity; // "full" = all tiles, "compact" = first 4
 }
 
 // ── Strategic Focus ───────────────────────────────────────────────

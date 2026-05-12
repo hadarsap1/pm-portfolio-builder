@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import type { Metric } from "@/lib/types/portfolio";
+import type { Metric, MetricsDensity } from "@/lib/types/portfolio";
 import type { AccentConfig } from "@/lib/utils/accent";
 import CountUp from "@/components/portfolio/motion/CountUp";
 import Stagger from "@/components/portfolio/motion/Stagger";
@@ -19,6 +19,7 @@ import Stagger from "@/components/portfolio/motion/Stagger";
 interface ImpactDashboardProps {
   metrics: Metric[];
   accent: AccentConfig;
+  density?: MetricsDensity;
 }
 
 /** Extract a usable float from strings like "$12M", "340%", "3.8x", "47" */
@@ -34,10 +35,12 @@ function parseMetricValue(raw: string): number | null {
   return base * (multipliers[suffix] ?? 1);
 }
 
-export default function ImpactDashboard({ metrics, accent }: ImpactDashboardProps): React.JSX.Element | null {
+export default function ImpactDashboard({ metrics, accent, density = "full" }: ImpactDashboardProps): React.JSX.Element | null {
   if (metrics.length === 0) return null;
 
-  const chartData = metrics
+  const visibleMetrics = density === "compact" ? metrics.slice(0, 4) : metrics;
+
+  const chartData = visibleMetrics
     .map((m) => ({ ...m, numericValue: parseMetricValue(m.value) }))
     .filter((m) => m.numericValue !== null);
 
@@ -47,7 +50,7 @@ export default function ImpactDashboard({ metrics, accent }: ImpactDashboardProp
     <div className="space-y-4">
       {/* Stat cards — staggered reveal + animated count-up on each value */}
       <Stagger className="grid grid-cols-3 gap-3" step={0.1}>
-        {metrics.map((m) => (
+        {visibleMetrics.map((m) => (
           <div
             key={m.id}
             className={cn(
