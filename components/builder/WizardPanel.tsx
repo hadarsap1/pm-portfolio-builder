@@ -94,7 +94,7 @@ export default function WizardPanel(): React.JSX.Element {
 
   if (isComplete) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full overflow-y-auto">
         <ErrorBoundary label="Completion panel">
           <CompletionPanel />
         </ErrorBoundary>

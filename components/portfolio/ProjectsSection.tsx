@@ -13,37 +13,27 @@ export default function ProjectsSection({
   if (!projects.length) return <></>;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {projects.map((p) => (
         <div
           key={p.id}
-          className={cn(
-            "rounded-xl border bg-white overflow-hidden transition-all duration-300",
-            "hover:-translate-y-0.5 hover:shadow-md",
-            accent.border
-          )}
+          className="rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-md transition-shadow duration-300"
         >
-          {/* Optional screenshot — full-bleed at the top of the card */}
-          {p.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={p.imageUrl}
-              alt=""
-              className="w-full h-40 object-cover border-b"
-            />
-          )}
-
-          <div className="p-5 space-y-4">
-            {/* Header */}
-            <div className="flex items-start justify-between gap-3">
+          {/* Accent header band */}
+          <div className={cn("px-6 py-5", accent.heroBg)}>
+            <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <p className="text-base font-semibold text-zinc-900 leading-snug">{p.title || "Untitled Project"}</p>
                 <p
-                  className={cn("text-sm font-medium mt-0.5", accent.heading)}
+                  className={cn("text-xl font-bold leading-snug", accent.heading)}
                   style={accent.customHex ? { color: accent.customHex } : undefined}
                 >
-                  {[p.company, p.duration].filter(Boolean).join(" · ")}
+                  {p.title || "Untitled Project"}
                 </p>
+                {(p.company || p.duration) && (
+                  <p className="text-sm text-zinc-500 mt-0.5">
+                    {[p.company, p.duration].filter(Boolean).join(" · ")}
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-3 shrink-0 mt-0.5">
                 {p.liveUrl && (
@@ -51,10 +41,7 @@ export default function ProjectsSection({
                     href={p.liveUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className={cn(
-                      "text-[11px] font-semibold transition-colors",
-                      accent.heading
-                    )}
+                    className={cn("text-sm font-semibold transition-opacity hover:opacity-70", accent.heading)}
                     style={accent.customHex ? { color: accent.customHex } : undefined}
                   >
                     Live ↗
@@ -65,40 +52,50 @@ export default function ProjectsSection({
                     href={p.link}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="text-[11px] font-medium text-zinc-400 hover:text-zinc-700 transition-colors"
+                    className="text-sm font-medium text-zinc-400 hover:text-zinc-700 transition-colors"
                   >
                     Case study ↗
                   </a>
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Three-step flow */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {[
-                { label: "Problem", text: p.problem },
-                { label: "Solution", text: p.solution },
-                { label: "Outcome", text: p.outcome },
-              ].map(({ label, text }) =>
-                text ? (
-                  <div key={label} className="space-y-1">
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{label}</p>
-                    <p className="text-sm text-zinc-600 leading-relaxed">{text}</p>
-                  </div>
-                ) : null
-              )}
-            </div>
+          {/* Content */}
+          <div className="px-6 py-5 bg-white space-y-4">
+            {p.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={p.imageUrl} alt="" className="w-full h-48 object-cover rounded-lg" />
+            )}
 
-            {/* Tags */}
+            {(p.problem || p.solution || p.outcome) && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:divide-x sm:divide-zinc-100">
+                {[
+                  { label: "Problem", text: p.problem },
+                  { label: "Solution", text: p.solution },
+                  { label: "Outcome", text: p.outcome },
+                ]
+                  .filter(({ text }) => text)
+                  .map(({ label, text }, i) => (
+                    <div key={label} className={cn("space-y-1.5", i > 0 && "sm:ps-4")}>
+                      <p
+                        className={cn("text-[10px] font-bold uppercase tracking-widest", accent.heading)}
+                        style={accent.customHex ? { color: accent.customHex } : undefined}
+                      >
+                        {label}
+                      </p>
+                      <p className="text-sm text-zinc-600 leading-relaxed">{text}</p>
+                    </div>
+                  ))}
+              </div>
+            )}
+
             {p.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {p.tags.map((tag) => (
                   <span
                     key={tag}
-                    className={cn(
-                      "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
-                      accent.badge
-                    )}
+                    className={cn("rounded-full px-2.5 py-0.5 text-xs font-medium", accent.badge)}
                   >
                     {tag}
                   </span>

@@ -18,6 +18,7 @@ import MissionSectionRender from "@/components/portfolio/MissionSection";
 import ManifestoSection from "@/components/portfolio/ManifestoSection";
 import NowSection from "@/components/portfolio/NowSection";
 import PassionsSection from "@/components/portfolio/PassionsSection";
+import FooterCTA from "@/components/portfolio/FooterCTA";
 
 const FONT_CLASS: Record<FontStyle, string> = {
   modern: "",
@@ -40,20 +41,25 @@ const NAV_LABELS: Record<SectionKey, string> = {
 
 function SectionHeading({
   children,
+  intro,
   accent,
 }: {
   children: React.ReactNode;
+  intro?: string;
   accent: { heading: string; divider: string; customHex?: string };
 }): React.JSX.Element {
   return (
-    <div className="flex items-center gap-4 mb-8">
-      <h2
-        className={cn("text-xs font-semibold uppercase tracking-widest shrink-0", accent.heading)}
-        style={accent.customHex ? { color: accent.customHex } : undefined}
-      >
-        {children}
-      </h2>
-      <div className={cn("flex-1 h-px", accent.divider)} />
+    <div className="mb-8">
+      <div className="flex items-center gap-4 mb-2">
+        <h2
+          className={cn("text-xs font-semibold uppercase tracking-widest shrink-0", accent.heading)}
+          style={accent.customHex ? { color: accent.customHex } : undefined}
+        >
+          {children}
+        </h2>
+        <div className={cn("flex-1 h-px", accent.divider)} />
+      </div>
+      {intro && <p className="text-sm text-zinc-400">{intro}</p>}
     </div>
   );
 }
@@ -242,37 +248,37 @@ export default function PreviewShell(): React.JSX.Element {
   const sectionContent: Record<SectionKey, React.ReactNode> = {
     metrics: showMetrics ? (
       <div>
-        <SectionHeading accent={accent}>By the Numbers</SectionHeading>
+        <SectionHeading accent={accent} intro="Results that moved the needle.">By the Numbers</SectionHeading>
         <ImpactDashboard metrics={globalMetrics} accent={accent} density={design.metricsDensity} />
       </div>
     ) : null,
     experience: showExperience ? (
       <div>
-        <SectionHeading accent={accent}>Experience</SectionHeading>
+        <SectionHeading accent={accent} intro="Where I've worked and what I built.">Experience</SectionHeading>
         <Experience experience={experience} accent={accent} />
       </div>
     ) : null,
     projects: showProjects ? (
       <div>
-        <SectionHeading accent={accent}>Projects</SectionHeading>
+        <SectionHeading accent={accent} intro="Products and initiatives I've led.">Projects</SectionHeading>
         <ProjectsSection projects={projects} accent={accent} />
       </div>
     ) : null,
     education: showEducation ? (
       <div>
-        <SectionHeading accent={accent}>Education</SectionHeading>
+        <SectionHeading accent={accent} intro="Academic background and credentials.">Education</SectionHeading>
         <EducationSection education={education} certifications={certifications} accent={accent} />
       </div>
     ) : null,
     skills: showSkills ? (
       <div>
-        <SectionHeading accent={accent}>Skills</SectionHeading>
+        <SectionHeading accent={accent} intro="Tools, methods, and domains.">Skills</SectionHeading>
         <SkillsSection skills={skills} accent={accent} />
       </div>
     ) : null,
     recommendations: showRecommendations ? (
       <div>
-        <SectionHeading accent={accent}>Recommendations</SectionHeading>
+        <SectionHeading accent={accent} intro="What people say about working with me.">Recommendations</SectionHeading>
         <RecommendationsSection recommendations={recommendations} accent={accent} />
       </div>
     ) : null,
@@ -347,6 +353,9 @@ export default function PreviewShell(): React.JSX.Element {
             </section>
           );
         })}
+
+        {/* Footer CTA */}
+        <FooterCTA basicInfo={basicInfo} accent={accent} />
       </div>
     </div>
   );
