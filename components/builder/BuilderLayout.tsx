@@ -10,12 +10,9 @@ import PreviewPanel from "@/components/builder/PreviewPanel";
 import ExportControls from "@/components/builder/ExportControls";
 import VersionManager from "@/components/builder/VersionManager";
 import ResumeImportModal from "@/components/builder/ResumeImportModal";
-import TailorJDModal from "@/components/builder/TailorJDModal";
-import CoverLetterModal from "@/components/builder/CoverLetterModal";
 import TemplatePickerModal from "@/components/builder/TemplatePickerModal";
 import { loadTemplate } from "@/lib/templates/load-template";
 import { STARTER_TEMPLATES } from "@/lib/templates/starter-templates";
-import { useAIAvailable } from "@/hooks/useAIAvailable";
 import TweaksPanel from "@/components/builder/TweaksPanel";
 import { SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,17 +22,12 @@ export default function BuilderLayout(): React.JSX.Element {
   const searchParams = useSearchParams();
   const resetPortfolio = usePortfolioStore((s) => s.resetPortfolio);
   const [importOpen, setImportOpen] = useState(false);
-  const [tailorOpen, setTailorOpen] = useState(false);
-  const [coverOpen, setCoverOpen] = useState(false);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [demoTemplateName, setDemoTemplateName] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [tweaksOpen, setTweaksOpen] = useState(false);
 
   // Demo mode: ?demo=<templateId> | ?demo=1 (first template)
-  // Loads the template, marks the wizard complete, and lands the user
-  // on the finished portfolio so they can see the full app without typing.
-  // Runs before the empty-state template-picker effect.
   useEffect(() => {
     const demoParam = searchParams.get("demo");
     if (!demoParam) return;
@@ -50,8 +42,6 @@ export default function BuilderLayout(): React.JSX.Element {
       router.replace("/builder");
       return;
     }
-    // One-shot URL-driven side effect: the demo param is a launch trigger,
-    // not derivable state. setState here is the right call.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDemoTemplateName(template.name);
     sessionStorage.setItem("template-picker-seen", "1");
@@ -59,12 +49,10 @@ export default function BuilderLayout(): React.JSX.Element {
     router.replace("/builder");
   }, [searchParams, router]);
 
-  // Auto-show template picker on first empty visit (skipped during demo).
+  // Auto-show template picker on first empty visit.
   useEffect(() => {
     if (searchParams.get("demo")) return;
     const s = usePortfolioStore.getState();
-    // Defaults are now blank rather than "Your Name", so a fresh visit is
-    // detected by an empty name + no real data.
     const isDefault =
       !s.portfolio.basicInfo.name?.trim() &&
       s.portfolio.experience.length === 0 &&
@@ -73,13 +61,12 @@ export default function BuilderLayout(): React.JSX.Element {
     const seen = sessionStorage.getItem("template-picker-seen");
     if (isDefault && !seen) {
       sessionStorage.setItem("template-picker-seen", "1");
-      // Per-session one-shot trigger; same exception as the demo effect above.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTemplateOpen(true);
     }
   }, [searchParams]);
+
   const [mobileTab, setMobileTab] = useState<"wizard" | "preview">("wizard");
-  const aiAvailable = useAIAvailable();
 
   function handleExitDemo(): void {
     resetPortfolio();
@@ -97,8 +84,6 @@ export default function BuilderLayout(): React.JSX.Element {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* ── Demo-mode banner ──────────────────────────────────────── */}
-      {/* Neutral colors so the banner doesn't imply the user has chosen the
-          Bold (violet) theme. The "Demo" badge carries the visual weight. */}
       {demoTemplateName && (
         <div className="shrink-0 bg-muted border-b border-border px-4 md:px-6 py-2 flex items-center justify-between gap-3 no-print">
           <p className="text-xs text-muted-foreground flex items-center gap-2 min-w-0">
@@ -141,22 +126,6 @@ export default function BuilderLayout(): React.JSX.Element {
           >
             ✦ Import Resume
           </button>
-          {aiAvailable && (
-            <button
-              onClick={() => setTailorOpen(true)}
-              className="font-medium text-primary hover:opacity-80 transition-opacity hidden sm:block"
-            >
-              ✦ Tailor to JD
-            </button>
-          )}
-          {aiAvailable && (
-            <button
-              onClick={() => setCoverOpen(true)}
-              className="font-medium text-primary hover:opacity-80 transition-opacity hidden md:block"
-            >
-              ✦ Cover Letter
-            </button>
-          )}
           <VersionManager />
           <Link
             href="/preview"
@@ -173,7 +142,7 @@ export default function BuilderLayout(): React.JSX.Element {
             Reset
           </button>
 
-          {/* Mobile overflow menu — surfaces actions hidden on small screens */}
+          {/* Mobile overflow menu */}
           <div className="relative md:hidden">
             <button
               onClick={() => setMobileMenuOpen((o) => !o)}
@@ -196,35 +165,24 @@ export default function BuilderLayout(): React.JSX.Element {
                   {[
                     { label: "Templates", onClick: () => setTemplateOpen(true) },
                     { label: "✦ Import Resume", onClick: () => setImportOpen(true) },
-                    aiAvailable && { label: "✦ Tailor to JD", onClick: () => setTailorOpen(true) },
-                    aiAvailable && { label: "✦ Cover Letter", onClick: () => setCoverOpen(true) },
-                    {
-                      label: "Open Preview ↗",
-                      onClick: () =>
-                        window.open("/preview", "_blank", "noreferrer"),
-                    },
+                    { label: "Open Preview ↗", onClick: () => window.open("/preview", "_blank", "noreferrer") },
                     { label: "Reset", onClick: handleReset, danger: true },
-                  ]
-                    .filter(Boolean)
-                    .map((item) => {
-                      const m = item as { label: string; onClick: () => void; danger?: boolean };
-                      return (
-                        <button
-                          key={m.label}
-                          role="menuitem"
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            m.onClick();
-                          }}
-                          className={cn(
-                            "block w-full text-start px-3 py-2 hover:bg-muted transition-colors",
-                            m.danger ? "text-destructive" : "text-foreground"
-                          )}
-                        >
-                          {m.label}
-                        </button>
-                      );
-                    })}
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      role="menuitem"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        item.onClick();
+                      }}
+                      className={cn(
+                        "block w-full text-start px-3 py-2 hover:bg-muted transition-colors",
+                        item.danger ? "text-destructive" : "text-foreground"
+                      )}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
                 </div>
               </>
             )}
@@ -252,24 +210,20 @@ export default function BuilderLayout(): React.JSX.Element {
 
       {/* ── Split-screen body ─────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left: Wizard */}
         <div
           className={cn(
             "flex flex-col overflow-hidden border-e",
             "md:w-[42%]",
-            // Mobile: fill width, hide when preview tab active
             mobileTab === "wizard" ? "flex-1 md:flex-none" : "hidden md:flex"
           )}
         >
           <WizardPanel />
         </div>
 
-        {/* Right: Live Preview */}
         <div
           className={cn(
             "flex flex-col overflow-hidden",
             "md:w-[58%]",
-            // Mobile: fill width, hide when wizard tab active
             mobileTab === "preview" ? "flex-1 md:flex-none" : "hidden md:flex"
           )}
         >
@@ -298,8 +252,6 @@ export default function BuilderLayout(): React.JSX.Element {
       {tweaksOpen && <TweaksPanel onClose={() => setTweaksOpen(false)} />}
 
       <ResumeImportModal open={importOpen} onClose={() => setImportOpen(false)} />
-      <TailorJDModal open={tailorOpen} onClose={() => setTailorOpen(false)} />
-      <CoverLetterModal open={coverOpen} onClose={() => setCoverOpen(false)} />
       <TemplatePickerModal open={templateOpen} onClose={() => setTemplateOpen(false)} />
     </div>
   );
