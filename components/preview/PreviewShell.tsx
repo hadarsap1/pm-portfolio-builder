@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { getAccent } from "@/lib/utils/accent";
-import type { SectionKey } from "@/lib/types/portfolio";
+import type { SectionKey, FontStyle } from "@/lib/types/portfolio";
 import HeroSection from "@/components/portfolio/HeroSection";
 import TerminalHero from "@/components/portfolio/TerminalHero";
 import TerminalExperience from "@/components/portfolio/TerminalExperience";
@@ -18,6 +18,12 @@ import MissionSectionRender from "@/components/portfolio/MissionSection";
 import ManifestoSection from "@/components/portfolio/ManifestoSection";
 import NowSection from "@/components/portfolio/NowSection";
 import PassionsSection from "@/components/portfolio/PassionsSection";
+
+const FONT_CLASS: Record<FontStyle, string> = {
+  modern: "",
+  classic: "font-serif",
+  technical: "font-mono",
+};
 
 const NAV_LABELS: Record<SectionKey, string> = {
   metrics: "Impact",
@@ -89,6 +95,7 @@ export default function PreviewShell(): React.JSX.Element {
 
   const accent = getAccent(design);
   const isTerminal = design.presentationMode === "terminal";
+  const fontClass = FONT_CLASS[design.fontStyle ?? "modern"];
   const Hero = isTerminal ? TerminalHero : HeroSection;
   const Experience = isTerminal ? TerminalExperience : ExperienceSection;
 
@@ -138,7 +145,7 @@ export default function PreviewShell(): React.JSX.Element {
   // ── Two-column layout ────────────────────────────────────────────
   if (layoutStyle === "two-column") {
     return (
-      <div className={cn("flex gap-0 h-full text-sm", isTerminal && "font-mono")}>
+      <div className={cn("flex gap-0 h-full text-sm", isTerminal ? "font-mono" : fontClass)}>
         {/* Sidebar */}
         <aside
           className={cn(
@@ -299,7 +306,7 @@ export default function PreviewShell(): React.JSX.Element {
 
   // ── One-column layout (website mode) ─────────────────────────────
   return (
-    <div className={cn("min-h-full", isTerminal && "font-mono")}>
+    <div className={cn("min-h-full", isTerminal ? "font-mono" : fontClass)}>
       {/* Hero — full-bleed tinted section */}
       <section className={cn("px-8 py-16", accent.heroBg)}>
         <div className="max-w-4xl mx-auto">
