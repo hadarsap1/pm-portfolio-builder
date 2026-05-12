@@ -22,6 +22,8 @@ const NOW_PRESETS = [
 
 export default function Step0Voice(): React.JSX.Element {
   const tagline = usePortfolioStore((s) => s.portfolio.basicInfo.tagline ?? "");
+  const heroImageUrl = usePortfolioStore((s) => s.portfolio.basicInfo.heroImageUrl);
+  const introVideoUrl = usePortfolioStore((s) => s.portfolio.basicInfo.introVideoUrl);
   const title = usePortfolioStore((s) => s.portfolio.basicInfo.title);
   const mission = usePortfolioStore((s) => s.portfolio.mission);
   const manifesto = usePortfolioStore((s) => s.portfolio.manifesto);
@@ -106,6 +108,24 @@ export default function Step0Voice(): React.JSX.Element {
     updateNowItem(id, { [field]: value } as Partial<NowItem>);
   }
 
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>): void {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setBasicInfo({ heroImageUrl: reader.result as string });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function getEmbedUrl(url: string): string | null {
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    return null;
+  }
+
   return (
     <div className="space-y-9 px-6 py-6">
       <div className="space-y-1">
@@ -153,6 +173,68 @@ export default function Step0Voice(): React.JSX.Element {
             onClose={() => setTaglinePolishOpen(false)}
           />
         )}
+      </div>
+
+      {/* ── Intro media ─────────────────────────────────────────── */}
+      <div className="space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-base font-semibold text-zinc-900">Intro media</h3>
+          <p className="text-sm text-zinc-500 leading-relaxed">
+            A photo or short video that puts a face and energy to the words. Both optional — either one helps.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Image upload */}
+          <div className="space-y-2">
+            <Label>Photo / image</Label>
+            {heroImageUrl ? (
+              <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={heroImageUrl}
+                  alt="Hero preview"
+                  className="w-full h-32 object-cover rounded-lg border border-zinc-200"
+                />
+                <button
+                  onClick={() => setBasicInfo({ heroImageUrl: undefined })}
+                  className="absolute top-2 end-2 bg-white/90 rounded-full text-xs px-2 py-1 text-zinc-600 hover:text-red-500 border border-zinc-200 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <label className="w-full rounded-lg border border-dashed border-zinc-300 py-8 flex flex-col items-center justify-center text-sm text-zinc-500 hover:border-zinc-400 cursor-pointer transition-colors gap-1">
+                <span className="text-2xl">🖼</span>
+                <span>Upload image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleImageUpload}
+                />
+              </label>
+            )}
+          </div>
+
+          {/* Video URL */}
+          <div className="space-y-2">
+            <Label>
+              Video URL <span className="text-zinc-400 font-normal">(optional)</span>
+            </Label>
+            <Input
+              value={introVideoUrl ?? ""}
+              onChange={(e) => setBasicInfo({ introVideoUrl: e.target.value || undefined })}
+              placeholder="YouTube or Vimeo link…"
+            />
+            {introVideoUrl && !getEmbedUrl(introVideoUrl) && (
+              <p className="text-[10px] text-amber-600">Paste a YouTube or Vimeo URL to embed.</p>
+            )}
+            {introVideoUrl && getEmbedUrl(introVideoUrl) && (
+              <p className="text-[10px] text-zinc-400">Will appear as an embedded video in your hero.</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* ── Mission ─────────────────────────────────────────────── */}

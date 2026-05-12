@@ -17,6 +17,7 @@ export interface BasicInfo {
   // Stripped from share URL payload to keep links lean — only shows in
   // the local preview and exported HTML.
   heroImageUrl?: string;
+  introVideoUrl?: string; // YouTube or Vimeo URL; embedded in hero section
 }
 
 // ── Identity / personality modules ────────────────────────────────

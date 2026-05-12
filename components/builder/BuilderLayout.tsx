@@ -13,8 +13,6 @@ import ResumeImportModal from "@/components/builder/ResumeImportModal";
 import TemplatePickerModal from "@/components/builder/TemplatePickerModal";
 import { loadTemplate } from "@/lib/templates/load-template";
 import { STARTER_TEMPLATES } from "@/lib/templates/starter-templates";
-import TweaksPanel from "@/components/builder/TweaksPanel";
-import { SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function BuilderLayout(): React.JSX.Element {
@@ -25,8 +23,6 @@ export default function BuilderLayout(): React.JSX.Element {
   const [templateOpen, setTemplateOpen] = useState(false);
   const [demoTemplateName, setDemoTemplateName] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [tweaksOpen, setTweaksOpen] = useState(false);
-
   // Demo mode: ?demo=<templateId> | ?demo=1 (first template)
   useEffect(() => {
     const demoParam = searchParams.get("demo");
@@ -190,20 +186,6 @@ export default function BuilderLayout(): React.JSX.Element {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => setTweaksOpen((o) => !o)}
-            aria-label="Design tweaks"
-            aria-pressed={tweaksOpen}
-            className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
-              tweaksOpen
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            )}
-          >
-            <SlidersHorizontal size={13} />
-            <span className="hidden sm:inline">Tweaks</span>
-          </button>
           <ExportControls />
         </div>
       </header>
@@ -248,8 +230,6 @@ export default function BuilderLayout(): React.JSX.Element {
           </button>
         ))}
       </div>
-
-      {tweaksOpen && <TweaksPanel onClose={() => setTweaksOpen(false)} />}
 
       <ResumeImportModal open={importOpen} onClose={() => setImportOpen(false)} />
       <TemplatePickerModal open={templateOpen} onClose={() => setTemplateOpen(false)} />

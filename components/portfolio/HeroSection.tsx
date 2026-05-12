@@ -15,6 +15,14 @@ interface HeroSectionProps {
   variant?: "full" | "header";
 }
 
+function getEmbedUrl(url: string): string | null {
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+  return null;
+}
+
 function buildContactLinks(basicInfo: BasicInfo): { href: string | null; label: string }[] {
   return [
     basicInfo.email ? { href: `mailto:${basicInfo.email}`, label: basicInfo.email } : null,
@@ -149,7 +157,17 @@ export default function HeroSection({
         )}
       </div>
 
-      {basicInfo.heroImageUrl && (
+      {basicInfo.introVideoUrl && getEmbedUrl(basicInfo.introVideoUrl) ? (
+        <div className={cn("w-full aspect-video rounded-2xl overflow-hidden mt-8 border shadow-sm", accent.border)}>
+          <iframe
+            src={getEmbedUrl(basicInfo.introVideoUrl)!}
+            title="Intro video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      ) : basicInfo.heroImageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={basicInfo.heroImageUrl}
@@ -159,7 +177,7 @@ export default function HeroSection({
             accent.border
           )}
         />
-      )}
+      ) : null}
     </div>
   );
 }
