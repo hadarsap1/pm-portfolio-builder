@@ -4,35 +4,21 @@ import React from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
-import type { ColorTheme, FontStyle, MetricsDensity } from "@/lib/types/portfolio";
-
-// ── Constants ────────────────────────────────────────────────────
-
-const TONES: { id: ColorTheme; label: string }[] = [
-  { id: "minimal", label: "Paper" },
-  { id: "bold", label: "Warm" },
-  { id: "technical", label: "Cool" },
-];
+import type { MetricsDensity } from "@/lib/types/portfolio";
 
 const ACCENT_PRESETS = [
   { hex: "#0891b2", label: "Teal" },
   { hex: "#be185d", label: "Rose" },
   { hex: "#65a30d", label: "Olive" },
   { hex: "#d97706", label: "Amber" },
-];
-
-const FONTS: { id: FontStyle; label: string }[] = [
-  { id: "modern", label: "Sans" },
-  { id: "classic", label: "Serif" },
-  { id: "technical", label: "Mono" },
+  { hex: "#7c3aed", label: "Violet" },
+  { hex: "#dc2626", label: "Red" },
 ];
 
 const DENSITIES: { id: MetricsDensity; label: string }[] = [
-  { id: "full", label: "Full · all tiles" },
-  { id: "compact", label: "Compact · 4 tiles" },
+  { id: "full", label: "All" },
+  { id: "compact", label: "Top 4" },
 ];
-
-// ── Component ────────────────────────────────────────────────────
 
 interface TweaksPanelProps {
   onClose: () => void;
@@ -43,22 +29,11 @@ export default function TweaksPanel({ onClose }: TweaksPanelProps): React.JSX.El
   const setDesignPreferences = usePortfolioStore((s) => s.setDesignPreferences);
 
   const activeAccent = design.customAccentColor ?? null;
-
-  function setTone(theme: ColorTheme): void {
-    setDesignPreferences({ colorTheme: theme });
-  }
+  const showNav = design.showStickyNav !== false;
+  const showFooter = design.showFooterCTA !== false;
 
   function setAccent(hex: string): void {
-    // Toggling the same swatch clears the override
     setDesignPreferences({ customAccentColor: activeAccent === hex ? undefined : hex });
-  }
-
-  function setFont(fontStyle: FontStyle): void {
-    setDesignPreferences({ fontStyle });
-  }
-
-  function setDensity(density: MetricsDensity): void {
-    setDesignPreferences({ metricsDensity: density });
   }
 
   return (
@@ -86,36 +61,12 @@ export default function TweaksPanel({ onClose }: TweaksPanelProps): React.JSX.El
       </div>
 
       <div className="px-5 py-4 space-y-5">
-        {/* Background Tone */}
+        {/* Accent color presets */}
         <section>
           <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-[oklch(0.75_0.18_350)] mb-2.5">
-            Background Tone
+            Accent Color
           </p>
-          <div className="flex gap-2">
-            {TONES.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => setTone(id)}
-                className={cn(
-                  "flex-1 py-2 rounded-lg text-xs font-medium transition-all",
-                  "bg-white/8 hover:bg-white/14",
-                  design.colorTheme === id
-                    ? "ring-2 ring-[oklch(0.75_0.18_350)] text-white"
-                    : "text-white/60"
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Accent */}
-        <section>
-          <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-[oklch(0.75_0.18_350)] mb-2.5">
-            Accent
-          </p>
-          <div className="flex gap-2.5">
+          <div className="grid grid-cols-6 gap-2">
             {ACCENT_PRESETS.map(({ hex, label }) => (
               <button
                 key={hex}
@@ -123,51 +74,35 @@ export default function TweaksPanel({ onClose }: TweaksPanelProps): React.JSX.El
                 title={label}
                 aria-label={`Accent: ${label}`}
                 className={cn(
-                  "h-9 flex-1 rounded-lg transition-all",
+                  "h-7 w-full rounded-lg transition-all",
                   activeAccent === hex
                     ? "ring-2 ring-white ring-offset-2 ring-offset-[oklch(0.14_0.025_185)]"
-                    : "opacity-80 hover:opacity-100"
+                    : "opacity-70 hover:opacity-100"
                 )}
                 style={{ backgroundColor: hex }}
               />
             ))}
           </div>
+          {activeAccent && (
+            <button
+              onClick={() => setDesignPreferences({ customAccentColor: undefined })}
+              className="mt-2 text-[10px] text-white/40 hover:text-white/70 transition-colors"
+            >
+              Clear override
+            </button>
+          )}
         </section>
 
-        {/* Font */}
+        {/* Metrics density */}
         <section>
           <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-[oklch(0.75_0.18_350)] mb-2.5">
-            Font
-          </p>
-          <div className="flex gap-2">
-            {FONTS.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => setFont(id)}
-                className={cn(
-                  "flex-1 py-2 rounded-lg text-xs font-medium transition-all",
-                  "bg-white/8 hover:bg-white/14",
-                  (design.fontStyle ?? "modern") === id
-                    ? "ring-2 ring-[oklch(0.75_0.18_350)] text-white"
-                    : "text-white/60"
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Telemetry Density */}
-        <section>
-          <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-[oklch(0.75_0.18_350)] mb-2.5">
-            Metrics Density
+            Metrics Shown
           </p>
           <div className="flex gap-2">
             {DENSITIES.map(({ id, label }) => (
               <button
                 key={id}
-                onClick={() => setDensity(id)}
+                onClick={() => setDesignPreferences({ metricsDensity: id })}
                 className={cn(
                   "flex-1 py-2 rounded-lg text-xs font-medium transition-all",
                   "bg-white/8 hover:bg-white/14",
@@ -179,6 +114,54 @@ export default function TweaksPanel({ onClose }: TweaksPanelProps): React.JSX.El
                 {label}
               </button>
             ))}
+          </div>
+        </section>
+
+        {/* Sticky nav */}
+        <section>
+          <div className="flex items-center justify-between">
+            <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-[oklch(0.75_0.18_350)]">
+              Sticky Navigation
+            </p>
+            <button
+              onClick={() => setDesignPreferences({ showStickyNav: !showNav })}
+              className={cn(
+                "relative h-5 w-9 rounded-full transition-colors",
+                showNav ? "bg-[oklch(0.75_0.18_350)]" : "bg-white/20"
+              )}
+              aria-pressed={showNav}
+            >
+              <span
+                className={cn(
+                  "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform",
+                  showNav ? "translate-x-4" : "translate-x-0.5"
+                )}
+              />
+            </button>
+          </div>
+        </section>
+
+        {/* Footer CTA */}
+        <section>
+          <div className="flex items-center justify-between">
+            <p className="text-[9px] font-bold tracking-[0.16em] uppercase text-[oklch(0.75_0.18_350)]">
+              Footer CTA
+            </p>
+            <button
+              onClick={() => setDesignPreferences({ showFooterCTA: !showFooter })}
+              className={cn(
+                "relative h-5 w-9 rounded-full transition-colors",
+                showFooter ? "bg-[oklch(0.75_0.18_350)]" : "bg-white/20"
+              )}
+              aria-pressed={showFooter}
+            >
+              <span
+                className={cn(
+                  "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform",
+                  showFooter ? "translate-x-4" : "translate-x-0.5"
+                )}
+              />
+            </button>
           </div>
         </section>
       </div>

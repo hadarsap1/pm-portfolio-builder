@@ -102,6 +102,8 @@ export default function PreviewShell(): React.JSX.Element {
   const accent = getAccent(design);
   const isTerminal = design.presentationMode === "terminal";
   const fontClass = FONT_CLASS[design.fontStyle ?? "modern"];
+  const showStickyNav = design.showStickyNav !== false;
+  const showFooterCTA = design.showFooterCTA !== false;
   const Hero = isTerminal ? TerminalHero : HeroSection;
   const Experience = isTerminal ? TerminalExperience : ExperienceSection;
 
@@ -321,7 +323,7 @@ export default function PreviewShell(): React.JSX.Element {
       </section>
 
       {/* Sticky navigation */}
-      {visibleNavKeys.length > 0 && (
+      {showStickyNav && visibleNavKeys.length > 0 && (
         <nav
           className={cn(
             "sticky top-0 z-10 border-b bg-white/90 backdrop-blur-sm",
@@ -355,7 +357,7 @@ export default function PreviewShell(): React.JSX.Element {
         })}
 
         {/* Footer CTA */}
-        <FooterCTA basicInfo={basicInfo} accent={accent} />
+        {showFooterCTA && <FooterCTA basicInfo={basicInfo} accent={accent} />}
       </div>
     </div>
   );

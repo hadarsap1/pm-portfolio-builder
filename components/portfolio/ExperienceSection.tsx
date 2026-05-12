@@ -20,7 +20,7 @@ export default function ExperienceSection({ experience, accent }: ExperienceSect
           <div className="flex items-start justify-between gap-4 mb-3">
             <div>
               <p
-                className={cn("text-2xl font-bold leading-tight", accent.heading)}
+                className={cn("text-xl font-bold leading-tight", accent.heading)}
                 style={accent.customHex ? { color: accent.customHex } : undefined}
               >
                 {item.company || "Company"}

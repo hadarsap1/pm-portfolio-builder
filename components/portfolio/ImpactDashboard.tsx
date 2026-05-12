@@ -13,6 +13,13 @@ interface ImpactDashboardProps {
   density?: MetricsDensity;
 }
 
+/** Scale font size down for longer value strings so they don't wrap awkwardly. */
+function valueFontClass(value: string): string {
+  if (value.length <= 4) return "text-5xl";
+  if (value.length <= 7) return "text-4xl";
+  return "text-3xl";
+}
+
 export default function ImpactDashboard({ metrics, accent, density = "full" }: ImpactDashboardProps): React.JSX.Element | null {
   if (metrics.length === 0) return null;
 
@@ -25,11 +32,11 @@ export default function ImpactDashboard({ metrics, accent, density = "full" }: I
     "grid-cols-2 sm:grid-cols-4";
 
   return (
-    <Stagger className={cn("grid gap-x-12 gap-y-10", colClass)} step={0.08}>
+    <Stagger className={cn("grid gap-x-12 gap-y-10 items-start", colClass)} step={0.08}>
       {visibleMetrics.map((m) => (
         <div key={m.id} className="space-y-1.5">
           <p
-            className={cn("text-5xl font-black tabular-nums leading-none tracking-tight", accent.heading)}
+            className={cn("font-black tabular-nums leading-none tracking-tight", valueFontClass(m.value), accent.heading)}
             style={accent.customHex ? { color: accent.customHex } : undefined}
           >
             {m.value ? <CountUp value={m.value} /> : "—"}

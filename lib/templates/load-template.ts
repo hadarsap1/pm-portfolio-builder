@@ -2,22 +2,31 @@ import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { STARTER_TEMPLATES, type StarterTemplate } from "@/lib/templates/starter-templates";
 
 /**
- * Reset the store and hydrate it with the named template's content.
- * Returns the template that was loaded, or null if the id was unknown.
+ * Load a starter template.
  *
- * `markComplete` is used by demo mode so the user lands on the finished
- * portfolio instead of step 0 of the wizard.
+ * `styleOnly: true` — applies only design + strategy, leaving the user's
+ *   portfolio data (basicInfo, experience, projects, etc.) untouched.
+ *   Used when the user already has real data and just wants a visual style.
+ *
+ * `markComplete` — used by demo mode to land on the finished portfolio.
  */
 export function loadTemplate(
   templateId: string,
-  options: { markComplete?: boolean } = {}
+  options: { markComplete?: boolean; styleOnly?: boolean } = {}
 ): StarterTemplate | null {
   const template = STARTER_TEMPLATES.find((t) => t.id === templateId);
   if (!template) return null;
 
   const store = usePortfolioStore.getState();
-  store.resetPortfolio();
 
+  if (options.styleOnly) {
+    store.setDesignPreferences(template.design);
+    store.setStrategicFocus(template.strategy);
+    return template;
+  }
+
+  // Full load: reset then hydrate with template sample data
+  store.resetPortfolio();
   store.setDesignPreferences(template.design);
   store.setStrategicFocus(template.strategy);
   store.setBasicInfo(template.portfolio.basicInfo);
@@ -42,7 +51,6 @@ export function loadTemplate(
     store.addSkillCategory({ ...skill, id: crypto.randomUUID() });
   });
 
-  // Identity modules
   if (template.portfolio.mission) {
     store.setMission({ ...template.portfolio.mission });
   }

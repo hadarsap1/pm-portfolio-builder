@@ -150,8 +150,10 @@ export interface DesignPreferences {
   layoutStyle: LayoutStyle;
   fontStyle: FontStyle;
   presentationMode?: PresentationMode;
-  customAccentColor?: string; // hex, e.g. "#7c3aed" — overrides colorTheme accent
-  metricsDensity?: MetricsDensity; // "full" = all tiles, "compact" = first 4
+  customAccentColor?: string;
+  metricsDensity?: MetricsDensity;
+  showStickyNav?: boolean;   // default true
+  showFooterCTA?: boolean;   // default true
 }
 
 // ── Strategic Focus ───────────────────────────────────────────────
