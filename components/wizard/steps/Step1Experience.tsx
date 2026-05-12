@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ExperienceItem, Metric } from "@/lib/types/portfolio";
+import ResumeImportModal from "@/components/builder/ResumeImportModal";
 
 interface SortableCardProps {
   item: ExperienceItem;
@@ -192,6 +193,7 @@ export default function Step1Experience(): React.JSX.Element {
 
   const aiAvailable = useAIAvailable();
   const [improvingId, setImprovingId] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
@@ -282,14 +284,23 @@ export default function Step1Experience(): React.JSX.Element {
           <h2 className="text-base font-semibold text-zinc-900">Experience</h2>
           <p className="text-sm text-zinc-500">Add your work history, most recent first.</p>
         </div>
-        <Button size="sm" onClick={handleAdd}>+ Add Role</Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => setImportOpen(true)}>✦ Import resume</Button>
+          <Button size="sm" onClick={handleAdd}>+ Add Role</Button>
+        </div>
       </div>
 
       {experience.length === 0 && (
-        <div className="rounded-lg border border-dashed border-zinc-200 py-10 text-center text-sm text-zinc-400">
-          No roles added yet. Click &ldquo;+ Add Role&rdquo; to start.
+        <div className="rounded-lg border border-dashed border-border py-10 flex flex-col items-center gap-3 text-center">
+          <p className="text-sm text-muted-foreground">Have a resume? Import it to auto-fill experience, education, and projects.</p>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={() => setImportOpen(true)}>✦ Import from resume</Button>
+            <Button size="sm" variant="outline" onClick={handleAdd}>Add manually</Button>
+          </div>
         </div>
       )}
+
+      <ResumeImportModal open={importOpen} onClose={() => setImportOpen(false)} />
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={experience.map((e) => e.id)} strategy={verticalListSortingStrategy}>

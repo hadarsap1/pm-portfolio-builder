@@ -316,6 +316,17 @@ Return ONLY a valid JSON object matching this exact schema — no markdown, no e
   "skills": [
     { "label": "string (category name)", "items": ["string"] }
   ],
+  "projects": [
+    {
+      "title": "string (project or initiative name)",
+      "company": "string (company where it was built, or empty)",
+      "duration": "string (e.g. Q1 2024 – Q3 2024, or empty)",
+      "problem": "string (the problem or opportunity addressed, 1–2 sentences)",
+      "solution": "string (what was built or done, 1–2 sentences)",
+      "outcome": "string (measurable result if present, else empty)",
+      "tags": ["string (relevant product/tech tags)"]
+    }
+  ],
   "globalMetrics": [
     { "label": "string", "value": "string (e.g. $12M or 340%)", "context": "string or empty" }
   ]
@@ -325,6 +336,7 @@ Rules:
 - Extract up to 5 key metrics from the experience bullets into globalMetrics
 - Group skills into logical categories (e.g. "Product", "Data & Analytics", "Tools")
 - Keep bullet text as-is from the resume
+- Extract distinct projects or major initiatives mentioned in the resume into projects (up to 6)
 - If a field is missing, use an empty string or empty array
 
 Resume text:
