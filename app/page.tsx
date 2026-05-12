@@ -10,201 +10,237 @@ export const metadata = {
 
 const FEATURES = [
   {
-    icon: "⚡",
+    n: "01",
     title: "Guided 8-step wizard",
-    body: "Walk through basics, experience, projects, education, skills, recommendations, strategy, and design. Every field updates your live preview instantly.",
+    body: "Walk through basics, experience, projects, impact metrics, and design. Each step updates the live preview.",
   },
   {
-    icon: "✦",
-    title: "AI-powered content",
-    body: "Paste your resume or job description — Claude rewrites your bullets and generates a punchy summary in seconds.",
+    n: "02",
+    title: "AI content polish",
+    body: "Paste your resume. Claude rewrites your bullets and writes a summary that doesn't sound like every other PM.",
   },
   {
-    icon: "🎨",
+    n: "03",
     title: "Three visual themes",
-    body: "Minimal, Bold, or Technical. Pick a layout (one or two column) and a font style. The preview updates live.",
+    body: "Minimal, Bold, Technical. One layout. One font style. Live preview. No infinite tweaking.",
   },
   {
-    icon: "📊",
-    title: "Impact dashboard",
-    body: "Add headline metrics — revenue driven, users shipped, retention lifted. They render as stat cards and a bar chart.",
+    n: "04",
+    title: "Impact metrics",
+    body: "Revenue, users, retention. They render as stat cards and a bar chart, not just bullet points.",
   },
   {
-    icon: "📥",
+    n: "05",
     title: "Export anywhere",
-    body: "Download a self-contained HTML file, generate a PDF via browser print, or deploy directly to GitHub Pages.",
+    body: "HTML, PDF, GitHub Pages, or Vercel. Your portfolio lives wherever you need it.",
   },
   {
-    icon: "💾",
-    title: "Auto-saved versions",
-    body: "Your work persists in localStorage. Save named snapshots and switch between versions without losing anything.",
+    n: "06",
+    title: "Auto-saved drafts",
+    body: "LocalStorage persistence. Named snapshots. Nothing lost between sessions.",
   },
 ];
 
 const STEPS = [
-  { n: "01", label: "Tell us about you", detail: "Name, title, summary, contact links. The first of eight guided steps." },
-  { n: "02", label: "Add experience & projects", detail: "Roles, bullets, case studies, headline metrics, recommendations." },
-  { n: "03", label: "Pick your style", detail: "Theme, layout, font, section order — preview updates live." },
+  { n: "01", label: "Tell us about you", detail: "Name, title, summary, contact links — the first of eight guided steps." },
+  { n: "02", label: "Add your work", detail: "Roles, bullets, case studies, headline metrics, recommendations." },
+  { n: "03", label: "Pick your style", detail: "Theme, layout, font, section order — the preview updates live." },
   { n: "04", label: "Export or deploy", detail: "HTML, PDF, GitHub Pages, or one-click Vercel." },
 ];
 
 export default function Home(): React.JSX.Element {
   return (
-    <main className="min-h-screen bg-white text-zinc-900">
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 max-w-6xl mx-auto">
-        <span className="font-bold text-sm tracking-tight">PM Portfolio Builder</span>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/gallery"
-            className="text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
-          >
-            Gallery
-          </Link>
-          <Link
-            href="/builder"
-            className="rounded-lg bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
-          >
-            Start building →
-          </Link>
-        </div>
-      </nav>
+    <main className="min-h-screen bg-background text-foreground">
 
-      {/* Hero */}
-      <section className="max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
-        <p className="text-xs font-semibold tracking-widest text-zinc-400 uppercase mb-4">
-          For Product Managers
-        </p>
-        <h1 className="text-5xl font-extrabold leading-tight tracking-tight mb-5">
-          Your portfolio,<br />
-          <span className="text-zinc-400">shipped in minutes.</span>
-        </h1>
-        <p className="text-lg text-zinc-500 max-w-xl mx-auto mb-8">
-          A guided wizard that turns your experience into a polished PM portfolio —
-          with AI suggestions, live preview, and one-click deployment.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/builder"
-            className="rounded-lg bg-zinc-900 px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-700 transition-colors"
-          >
-            Build my portfolio →
-          </Link>
-          <Link
-            href="/builder?demo=1"
-            className="rounded-lg border border-zinc-200 px-6 py-3 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
-          >
-            Try the demo →
-          </Link>
-        </div>
-        <p className="text-xs text-zinc-400 mt-4">
-          The demo loads a fully filled-out portfolio so you can poke around. No email, no account.
-        </p>
-
-        {/* Hero illustration */}
-        <div className="mt-12 max-w-3xl mx-auto">
-          <Image
-            src="/landing-hero.png"
-            alt="Abstract illustration of a PM portfolio: a resume, a chart, testimonials, and an avatar"
-            width={1408}
-            height={792}
-            priority
-            className="w-full h-auto"
-          />
-        </div>
-      </section>
-
-      {/* Preview strip */}
-      <section className="max-w-5xl mx-auto px-6 pb-16">
-        <div className="rounded-xl border border-zinc-200 bg-zinc-50 overflow-hidden">
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-zinc-200">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-            <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-            <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
-            <span className="ms-2 text-xs text-zinc-400">PM Portfolio Builder — Split-screen editor</span>
+      {/* ── Hero (amber) ── */}
+      <section className="bg-primary text-primary-foreground">
+        <nav className="flex items-center justify-between px-6 py-5 max-w-7xl mx-auto">
+          <span className="font-heading font-bold text-sm tracking-tight">PM Portfolio Builder</span>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/gallery"
+              className="text-sm font-medium opacity-65 hover:opacity-100 transition-opacity"
+            >
+              Gallery
+            </Link>
+            <Link
+              href="/builder"
+              className="bg-primary-foreground text-primary px-4 py-1.5 text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              Start building →
+            </Link>
           </div>
-          <div className="flex divide-x divide-zinc-200 min-h-[200px]">
-            <div className="w-[42%] p-6 space-y-3">
-              <div className="h-3 w-24 bg-zinc-200 rounded animate-pulse" />
-              <div className="h-8 w-48 bg-zinc-200 rounded animate-pulse" />
-              <div className="h-3 w-full bg-zinc-100 rounded animate-pulse" />
-              <div className="h-3 w-4/5 bg-zinc-100 rounded animate-pulse" />
-              <div className="h-3 w-3/5 bg-zinc-100 rounded animate-pulse" />
+        </nav>
+
+        <div className="max-w-7xl mx-auto px-6 pt-14 pb-20">
+          <h1 className="font-heading text-[clamp(2.8rem,6.5vw,5rem)] font-extrabold leading-[0.93] tracking-tight max-w-4xl mb-8">
+            Ship your portfolio<br />
+            like you ship<br />
+            a product.
+          </h1>
+          <p className="text-base opacity-72 max-w-lg mb-10 leading-relaxed">
+            Guided wizard. AI-polished copy. Three visual themes. Exports to HTML, PDF, or GitHub Pages.
+            No account, no designer.
+          </p>
+          <div className="flex flex-wrap items-center gap-5">
+            <Link
+              href="/builder"
+              className="bg-primary-foreground text-primary px-6 py-3 text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              Build my portfolio →
+            </Link>
+            <Link
+              href="/builder?demo=1"
+              className="text-sm font-medium underline underline-offset-4 opacity-65 hover:opacity-100 transition-opacity"
+            >
+              Try the demo first
+            </Link>
+          </div>
+          <p className="text-xs opacity-45 mt-5">
+            No email. No account. Your data stays in your browser.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Product preview ── */}
+      <section className="bg-primary">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="rounded-t-lg border border-b-0 border-primary-foreground/10 bg-background overflow-hidden shadow-[0_-8px_40px_oklch(0_0_0/0.18)]">
+            {/* Browser chrome */}
+            <div className="flex items-center gap-1.5 px-4 py-3 bg-muted border-b border-border">
+              <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-green-400/80" />
+              <span className="ms-3 text-xs text-muted-foreground font-mono">
+                pm-portfolio-builder.vercel.app/builder
+              </span>
             </div>
-            <div className="w-[58%] p-6 bg-white space-y-4">
-              <div className="h-5 w-32 bg-zinc-900 rounded animate-pulse" />
-              <div className="h-3 w-24 bg-zinc-200 rounded animate-pulse" />
-              <div className="flex gap-2 mt-2">
-                {[40, 32, 56].map((w) => (
-                  <div key={w} className="h-8 rounded bg-zinc-100 animate-pulse" style={{ width: `${w}px` }} />
-                ))}
+            {/* Split pane */}
+            <div className="flex divide-x divide-border">
+              {/* Left: wizard panel */}
+              <div className="w-[38%] p-7 bg-muted/25 space-y-4">
+                <div className="flex gap-1 mb-6">
+                  {Array.from({ length: 8 }, (_, i) => (
+                    <div
+                      key={i}
+                      className="h-1 flex-1 rounded-full"
+                      style={{ background: i === 1 ? "var(--primary)" : "var(--border)" }}
+                    />
+                  ))}
+                </div>
+                <div className="h-3 w-28 rounded" style={{ background: "color-mix(in oklch, var(--primary) 25%, transparent)" }} />
+                <div className="h-7 w-52 rounded" style={{ background: "color-mix(in oklch, var(--foreground) 10%, transparent)" }} />
+                <div className="space-y-2 pt-1">
+                  {[1, 0.8, 0.6].map((op, i) => (
+                    <div
+                      key={i}
+                      className="h-3 rounded"
+                      style={{
+                        width: `${[100, 80, 62][i]}%`,
+                        background: `color-mix(in oklch, var(--foreground) ${Math.round(op * 7)}%, transparent)`,
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="pt-3">
+                  <div className="h-8 w-36 rounded" style={{ background: "var(--primary)" }} />
+                </div>
               </div>
-              <div className="space-y-2 pt-2">
-                <div className="h-3 w-full bg-zinc-100 rounded animate-pulse" />
-                <div className="h-3 w-5/6 bg-zinc-100 rounded animate-pulse" />
-                <div className="h-3 w-4/6 bg-zinc-100 rounded animate-pulse" />
+              {/* Right: live preview */}
+              <div className="w-[62%] p-9 bg-background">
+                <Image
+                  src="/landing-hero.png"
+                  alt="PM portfolio preview — resume, metrics chart, and testimonials"
+                  width={1408}
+                  height={792}
+                  priority
+                  className="w-full h-auto"
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="max-w-5xl mx-auto px-6 pb-20">
-        <h2 className="text-xl font-bold text-center mb-10">Everything you need, nothing you don&apos;t</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="rounded-xl border border-zinc-100 p-5 hover:border-zinc-300 transition-colors">
-              <div className="text-2xl mb-3">{f.icon}</div>
-              <h3 className="font-semibold text-sm mb-1.5">{f.title}</h3>
-              <p className="text-xs text-zinc-500 leading-relaxed">{f.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="bg-zinc-50 border-t border-zinc-100 py-20">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-xl font-bold text-center mb-12">How it works</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {STEPS.map((s) => (
-              <div key={s.n} className="text-center">
-                <div className="text-3xl font-extrabold text-zinc-200 mb-2">{s.n}</div>
-                <h3 className="font-semibold text-sm mb-1">{s.label}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{s.detail}</p>
+      {/* ── Features ── */}
+      <section className="bg-background border-t border-border py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="font-heading text-2xl font-bold mb-3 tracking-tight">
+            Everything you need. Nothing you don't.
+          </h2>
+          <p className="text-muted-foreground text-sm mb-16 max-w-md">
+            Six features. No fluff, no upsells, no account required until you're ready to deploy.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-x-16 gap-y-10">
+            {FEATURES.map((f) => (
+              <div key={f.n} className="flex gap-6">
+                <span className="text-xs font-mono font-bold text-primary mt-0.5 w-6 shrink-0 tabular-nums">
+                  {f.n}
+                </span>
+                <div>
+                  <h3 className="font-semibold text-sm mb-1.5">{f.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{f.body}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="max-w-3xl mx-auto px-6 py-24 text-center">
-        <h2 className="text-3xl font-extrabold mb-4">Ready to stand out?</h2>
-        <p className="text-zinc-500 mb-8 text-sm">
-          No account required. Your data stays in your browser until you choose to deploy.
-        </p>
-        <Link
-          href="/builder"
-          className="inline-block rounded-lg bg-zinc-900 px-8 py-3.5 text-sm font-semibold text-white hover:bg-zinc-700 transition-colors"
-        >
-          Build my portfolio →
-        </Link>
+      {/* ── How it works ── */}
+      <section className="bg-muted border-t border-border py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="font-heading text-2xl font-bold mb-16 tracking-tight">How it works</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {STEPS.map((s) => (
+              <div key={s.n}>
+                <div
+                  className="font-heading text-5xl font-extrabold mb-4 leading-none"
+                  style={{ color: "color-mix(in oklch, var(--primary) 40%, transparent)" }}
+                >
+                  {s.n}
+                </div>
+                <h3 className="font-semibold text-sm mb-2">{s.label}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{s.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-zinc-100 py-8 text-center text-xs text-zinc-400 space-y-2">
-        <p>PM Portfolio Builder · Built with Next.js, Claude AI, and Tailwind</p>
-        <p>
-          Your data stays in your browser.{" "}
-          <a
-            href="mailto:hadarsap@gmail.com?subject=PM Portfolio Builder feedback"
-            className="underline underline-offset-2 hover:text-zinc-600 transition-colors"
+      {/* ── Final CTA (amber) ── */}
+      <section className="bg-primary text-primary-foreground border-t border-primary-foreground/10 py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="font-heading text-[clamp(2rem,4vw,3.25rem)] font-extrabold leading-tight max-w-xl mb-5 tracking-tight">
+            Your work is good.<br />
+            Your portfolio should match.
+          </h2>
+          <p className="opacity-65 text-sm mb-10 max-w-xs leading-relaxed">
+            30 minutes. Guided. Opinionated. Done.
+          </p>
+          <Link
+            href="/builder"
+            className="inline-block bg-primary-foreground text-primary px-8 py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity"
           >
-            Send feedback
-          </a>
-        </p>
+            Build my portfolio →
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-border py-8 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted-foreground">
+          <p>PM Portfolio Builder · Built with Next.js, Claude AI, and Tailwind</p>
+          <p>
+            Your data stays in your browser.{" "}
+            <a
+              href="mailto:hadarsap@gmail.com?subject=PM Portfolio Builder feedback"
+              className="underline underline-offset-2 hover:text-foreground transition-colors"
+            >
+              Send feedback
+            </a>
+          </p>
+        </div>
       </footer>
     </main>
   );

@@ -19,7 +19,7 @@ export default function WizardProgress({
   onStepClick,
 }: WizardProgressProps): React.JSX.Element {
   return (
-    <div className="px-6 py-5 border-b bg-white">
+    <div className="px-6 py-5 border-b bg-background">
       <div className="flex items-center gap-0">
         {labels.slice(0, totalSteps).map((label, index) => {
           const isVisited = index < currentStep;
@@ -43,11 +43,11 @@ export default function WizardProgress({
                 <div
                   className={cn(
                     "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold border-2 transition-colors",
-                    isDoneWithContent && "bg-zinc-900 border-zinc-900 text-white group-hover:bg-zinc-700 group-hover:border-zinc-700",
-                    isDoneEmpty && "bg-zinc-200 border-zinc-200 text-zinc-500 group-hover:bg-zinc-300",
-                    isActive && filled && "bg-white border-zinc-900 text-zinc-900 ring-2 ring-zinc-900/10",
-                    isActive && !filled && "bg-white border-zinc-900 text-zinc-900",
-                    isFuture && "bg-white border-zinc-300 text-zinc-400 group-hover:border-zinc-500"
+                    isDoneWithContent && "bg-primary border-primary text-primary-foreground hover:opacity-90",
+                    isDoneEmpty && "bg-muted border-border text-muted-foreground group-hover:border-muted-foreground",
+                    isActive && filled && "bg-background border-primary text-foreground ring-2 ring-primary/15",
+                    isActive && !filled && "bg-background border-primary text-foreground",
+                    isFuture && "bg-background border-border text-muted-foreground group-hover:border-muted-foreground"
                   )}
                 >
                   {isDoneWithContent ? (
@@ -65,7 +65,7 @@ export default function WizardProgress({
                 <span
                   className={cn(
                     "text-[10px] font-medium whitespace-nowrap transition-colors",
-                    isActive ? "text-zinc-900" : "text-zinc-400"
+                    isActive ? "text-foreground" : "text-muted-foreground"
                   )}
                 >
                   {label}
@@ -78,8 +78,8 @@ export default function WizardProgress({
                   className={cn(
                     "flex-1 h-px mx-2 mb-5 transition-colors",
                     index < currentStep
-                      ? filled ? "bg-zinc-900" : "bg-zinc-300"
-                      : "bg-zinc-200"
+                      ? filled ? "bg-primary" : "bg-border"
+                      : "bg-border"
                   )}
                 />
               )}

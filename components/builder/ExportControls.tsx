@@ -196,7 +196,7 @@ export default function ExportControls(): React.JSX.Element {
             value={repoName}
             onChange={(e) => setRepoName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"))}
             onKeyDown={(e) => { if (e.key === "Enter") handleDeploy(); if (e.key === "Escape") setShowRepoInput(false); }}
-            className="h-7 w-36 rounded border border-zinc-300 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="h-7 w-36 border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary/50"
             placeholder="repo-name"
             autoFocus
           />
@@ -217,7 +217,7 @@ export default function ExportControls(): React.JSX.Element {
         {showRepoInput && (
           <button
             onClick={() => setShowRepoInput(false)}
-            className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             ✕
           </button>

@@ -5,7 +5,7 @@ export default function BuilderPage(): React.JSX.Element {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center h-screen text-sm text-zinc-400">
+        <div className="flex items-center justify-center h-screen text-sm text-muted-foreground">
           Loading editor…
         </div>
       }

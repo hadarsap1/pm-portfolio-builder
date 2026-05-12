@@ -97,19 +97,19 @@ export default function BuilderLayout(): React.JSX.Element {
       {/* Neutral colors so the banner doesn't imply the user has chosen the
           Bold (violet) theme. The "Demo" badge carries the visual weight. */}
       {demoTemplateName && (
-        <div className="shrink-0 bg-zinc-50 border-b border-zinc-200 px-4 md:px-6 py-2 flex items-center justify-between gap-3 no-print">
-          <p className="text-xs text-zinc-700 flex items-center gap-2 min-w-0">
-            <span className="inline-flex items-center rounded-full bg-zinc-900 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white shrink-0">
+        <div className="shrink-0 bg-muted border-b border-border px-4 md:px-6 py-2 flex items-center justify-between gap-3 no-print">
+          <p className="text-xs text-muted-foreground flex items-center gap-2 min-w-0">
+            <span className="inline-flex items-center rounded-sm bg-foreground px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-background shrink-0">
               Demo
             </span>
-            <span className="font-medium text-zinc-900 truncate">{demoTemplateName}</span>
-            <span className="text-zinc-500 hidden sm:inline truncate">
+            <span className="font-medium text-foreground truncate">{demoTemplateName}</span>
+            <span className="text-muted-foreground hidden sm:inline truncate">
               · explore the finished portfolio, then start your own.
             </span>
           </p>
           <button
             onClick={handleExitDemo}
-            className="text-xs font-semibold text-zinc-700 hover:text-zinc-900 transition-colors shrink-0"
+            className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors shrink-0"
           >
             Start fresh →
           </button>
@@ -117,31 +117,31 @@ export default function BuilderLayout(): React.JSX.Element {
       )}
 
       {/* ── Top header ────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between shrink-0 border-b bg-white px-4 md:px-6 py-3 gap-3 no-print">
+      <header className="flex items-center justify-between shrink-0 border-b bg-background px-4 md:px-6 py-3 gap-3 no-print">
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-sm font-semibold text-zinc-900 hidden sm:block">PM Portfolio Builder</span>
-          <span className="text-sm font-semibold text-zinc-900 sm:hidden">PM Builder</span>
-          <span className="text-[10px] text-zinc-400 font-medium tracking-widest uppercase hidden md:block">Beta</span>
+          <span className="font-heading text-sm font-semibold text-foreground hidden sm:block">PM Portfolio Builder</span>
+          <span className="font-heading text-sm font-semibold text-foreground sm:hidden">PM Builder</span>
+          <span className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase hidden md:block">Beta</span>
         </div>
 
         {/* Centre actions */}
         <div className="flex items-center gap-3 md:gap-4 text-xs">
           <button
             onClick={() => setTemplateOpen(true)}
-            className="font-medium text-zinc-500 hover:text-zinc-900 transition-colors hidden sm:block"
+            className="font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
           >
             Templates
           </button>
           <button
             onClick={() => setImportOpen(true)}
-            className="font-medium text-violet-600 hover:text-violet-800 transition-colors hidden sm:block"
+            className="font-medium text-primary hover:opacity-80 transition-opacity hidden sm:block"
           >
             ✦ Import Resume
           </button>
           {aiAvailable && (
             <button
               onClick={() => setTailorOpen(true)}
-              className="font-medium text-violet-600 hover:text-violet-800 transition-colors hidden sm:block"
+              className="font-medium text-primary hover:opacity-80 transition-opacity hidden sm:block"
             >
               ✦ Tailor to JD
             </button>
@@ -149,7 +149,7 @@ export default function BuilderLayout(): React.JSX.Element {
           {aiAvailable && (
             <button
               onClick={() => setCoverOpen(true)}
-              className="font-medium text-violet-600 hover:text-violet-800 transition-colors hidden md:block"
+              className="font-medium text-primary hover:opacity-80 transition-opacity hidden md:block"
             >
               ✦ Cover Letter
             </button>
@@ -159,13 +159,13 @@ export default function BuilderLayout(): React.JSX.Element {
             href="/preview"
             target="_blank"
             rel="noreferrer"
-            className="font-medium text-zinc-500 hover:text-zinc-900 transition-colors hidden md:block"
+            className="font-medium text-muted-foreground hover:text-foreground transition-colors hidden md:block"
           >
             Open Preview ↗
           </Link>
           <button
             onClick={handleReset}
-            className="font-medium text-zinc-400 hover:text-red-500 transition-colors hidden md:block"
+            className="font-medium text-muted-foreground hover:text-destructive transition-colors hidden md:block"
           >
             Reset
           </button>
@@ -176,7 +176,7 @@ export default function BuilderLayout(): React.JSX.Element {
               onClick={() => setMobileMenuOpen((o) => !o)}
               aria-label="Open menu"
               aria-expanded={mobileMenuOpen}
-              className="flex items-center justify-center h-9 w-9 rounded-md border border-zinc-200 text-zinc-700 hover:bg-zinc-50 transition-colors"
+              className="flex items-center justify-center h-9 w-9 border border-border text-foreground hover:bg-muted transition-colors"
             >
               <span className="text-base leading-none">···</span>
             </button>
@@ -188,7 +188,7 @@ export default function BuilderLayout(): React.JSX.Element {
                 />
                 <div
                   role="menu"
-                  className="absolute end-0 mt-2 w-56 rounded-lg border border-zinc-200 bg-white shadow-lg z-50 py-1 text-sm"
+                  className="absolute end-0 mt-2 w-56 border border-border bg-background shadow-lg z-50 py-1 text-sm"
                 >
                   {[
                     { label: "Templates", onClick: () => setTemplateOpen(true) },
@@ -214,8 +214,8 @@ export default function BuilderLayout(): React.JSX.Element {
                             m.onClick();
                           }}
                           className={cn(
-                            "block w-full text-start px-3 py-2 hover:bg-zinc-50 transition-colors",
-                            m.danger ? "text-red-600" : "text-zinc-700"
+                            "block w-full text-start px-3 py-2 hover:bg-muted transition-colors",
+                            m.danger ? "text-destructive" : "text-foreground"
                           )}
                         >
                           {m.label}
@@ -259,7 +259,7 @@ export default function BuilderLayout(): React.JSX.Element {
       </div>
 
       {/* ── Mobile tab bar ────────────────────────────────────────── */}
-      <div className="md:hidden flex shrink-0 border-t bg-white no-print">
+      <div className="md:hidden flex shrink-0 border-t bg-background no-print">
         {(["wizard", "preview"] as const).map((tab) => (
           <button
             key={tab}
@@ -267,8 +267,8 @@ export default function BuilderLayout(): React.JSX.Element {
             className={cn(
               "flex-1 py-3 text-xs font-semibold capitalize transition-colors",
               mobileTab === tab
-                ? "text-zinc-900 border-t-2 border-zinc-900 -mt-px"
-                : "text-zinc-400"
+                ? "text-foreground border-t-2 border-primary -mt-px"
+                : "text-muted-foreground"
             )}
           >
             {tab === "wizard" ? "Wizard" : "Preview"}

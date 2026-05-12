@@ -14,7 +14,7 @@ export default function WizardNavigation(): React.JSX.Element {
   const isLast = currentStep === totalSteps - 1;
 
   return (
-    <div className="sticky bottom-0 flex items-center justify-between border-t bg-white px-6 py-4">
+    <div className="sticky bottom-0 flex items-center justify-between border-t bg-background px-6 py-4">
       <Button
         variant="outline"
         onClick={prevStep}
@@ -23,7 +23,7 @@ export default function WizardNavigation(): React.JSX.Element {
         Back
       </Button>
 
-      <span className="text-xs text-zinc-400 font-medium">
+      <span className="text-xs text-muted-foreground font-medium">
         Step {currentStep + 1} of {totalSteps}
       </span>
 
