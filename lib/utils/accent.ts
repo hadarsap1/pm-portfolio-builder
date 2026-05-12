@@ -6,6 +6,8 @@ export interface AccentConfig {
   badge: string;
   barFill: string;
   ring: string;
+  heroBg: string;
+  divider: string;
   /** When set, apply as inline style color override on accent-colored text elements */
   customHex?: string;
 }
@@ -17,6 +19,8 @@ export const ACCENT: Record<ColorTheme, AccentConfig> = {
     badge: "bg-slate-100 text-slate-700",
     barFill: "#475569",
     ring: "ring-slate-200",
+    heroBg: "bg-slate-50",
+    divider: "bg-slate-200",
   },
   bold: {
     heading: "text-violet-600",
@@ -24,6 +28,8 @@ export const ACCENT: Record<ColorTheme, AccentConfig> = {
     badge: "bg-violet-50 text-violet-700",
     barFill: "#7c3aed",
     ring: "ring-violet-200",
+    heroBg: "bg-violet-50",
+    divider: "bg-violet-100",
   },
   technical: {
     heading: "text-emerald-600",
@@ -31,6 +37,8 @@ export const ACCENT: Record<ColorTheme, AccentConfig> = {
     badge: "bg-emerald-50 text-emerald-700",
     barFill: "#059669",
     ring: "ring-emerald-200",
+    heroBg: "bg-emerald-50",
+    divider: "bg-emerald-100",
   },
 };
 

@@ -19,20 +19,36 @@ import ManifestoSection from "@/components/portfolio/ManifestoSection";
 import NowSection from "@/components/portfolio/NowSection";
 import PassionsSection from "@/components/portfolio/PassionsSection";
 
+const NAV_LABELS: Record<SectionKey, string> = {
+  metrics: "Impact",
+  experience: "Experience",
+  projects: "Projects",
+  education: "Education",
+  skills: "Skills",
+  recommendations: "Endorsements",
+  mission: "Mission",
+  manifesto: "Manifesto",
+  now: "Now",
+  passions: "Passions",
+};
+
 function SectionHeading({
   children,
   accent,
 }: {
   children: React.ReactNode;
-  accent: { heading: string; customHex?: string };
+  accent: { heading: string; divider: string; customHex?: string };
 }): React.JSX.Element {
   return (
-    <h2
-      className={cn("text-[10px] font-semibold uppercase tracking-widest mb-3", accent.heading)}
-      style={accent.customHex ? { color: accent.customHex } : undefined}
-    >
-      {children}
-    </h2>
+    <div className="flex items-center gap-4 mb-8">
+      <h2
+        className={cn("text-xs font-semibold uppercase tracking-widest shrink-0", accent.heading)}
+        style={accent.customHex ? { color: accent.customHex } : undefined}
+      >
+        {children}
+      </h2>
+      <div className={cn("flex-1 h-px", accent.divider)} />
+    </div>
   );
 }
 
@@ -73,9 +89,9 @@ export default function PreviewShell(): React.JSX.Element {
 
   const accent = getAccent(design);
   const isTerminal = design.presentationMode === "terminal";
-  // Pick which hero/experience renderer matches the current presentation
   const Hero = isTerminal ? TerminalHero : HeroSection;
   const Experience = isTerminal ? TerminalExperience : ExperienceSection;
+
   const isEmpty =
     !basicInfo.summary &&
     !basicInfo.tagline &&
@@ -173,7 +189,7 @@ export default function PreviewShell(): React.JSX.Element {
           {showMetrics && (
             <div>
               <SectionHeading accent={accent}>Impact</SectionHeading>
-              <ImpactDashboard metrics={globalMetrics} accent={accent} />
+              <ImpactDashboard metrics={globalMetrics} accent={accent} density={design.metricsDensity} />
             </div>
           )}
 
@@ -218,76 +234,113 @@ export default function PreviewShell(): React.JSX.Element {
 
   const sectionContent: Record<SectionKey, React.ReactNode> = {
     metrics: showMetrics ? (
-      <div key="metrics">
+      <div>
         <SectionHeading accent={accent}>By the Numbers</SectionHeading>
-        <ImpactDashboard metrics={globalMetrics} accent={accent} />
+        <ImpactDashboard metrics={globalMetrics} accent={accent} density={design.metricsDensity} />
       </div>
     ) : null,
     experience: showExperience ? (
-      <div key="experience">
+      <div>
         <SectionHeading accent={accent}>Experience</SectionHeading>
         <Experience experience={experience} accent={accent} />
       </div>
     ) : null,
     projects: showProjects ? (
-      <div key="projects">
+      <div>
         <SectionHeading accent={accent}>Projects</SectionHeading>
         <ProjectsSection projects={projects} accent={accent} />
       </div>
     ) : null,
     education: showEducation ? (
-      <div key="education">
+      <div>
         <SectionHeading accent={accent}>Education</SectionHeading>
         <EducationSection education={education} certifications={certifications} accent={accent} />
       </div>
     ) : null,
     skills: showSkills ? (
-      <div key="skills">
+      <div>
         <SectionHeading accent={accent}>Skills</SectionHeading>
         <SkillsSection skills={skills} accent={accent} />
       </div>
     ) : null,
     recommendations: showRecommendations ? (
-      <div key="recommendations">
+      <div>
         <SectionHeading accent={accent}>Recommendations</SectionHeading>
         <RecommendationsSection recommendations={recommendations} accent={accent} />
       </div>
     ) : null,
     mission: showMission ? (
-      <div key="mission">
+      <div>
         <SectionHeading accent={accent}>What I care about</SectionHeading>
         <MissionSectionRender mission={mission} accent={accent} />
       </div>
     ) : null,
     manifesto: showManifesto ? (
-      <div key="manifesto">
+      <div>
         <SectionHeading accent={accent}>Manifesto</SectionHeading>
         <ManifestoSection manifesto={manifesto} accent={accent} />
       </div>
     ) : null,
     now: showNow ? (
-      <div key="now">
+      <div>
         <SectionHeading accent={accent}>Now</SectionHeading>
         <NowSection now={now} accent={accent} />
       </div>
     ) : null,
     passions: showPassions ? (
-      <div key="passions">
+      <div>
         <SectionHeading accent={accent}>What I do for love</SectionHeading>
         <PassionsSection passions={passions} accent={accent} />
       </div>
     ) : null,
   };
 
-  // ── One-column layout ────────────────────────────────────────────
-  return (
-    <div className={cn("max-w-2xl mx-auto px-8 py-10 space-y-10 text-sm", isTerminal && "font-mono")}>
-      {/* Hero */}
-      <div className={cn("border-b pb-7", accent.border)}>
-        <Hero basicInfo={basicInfo} accent={accent} variant="full" />
-      </div>
+  const visibleNavKeys = sectionOrder.filter((key) => sectionContent[key] !== null);
 
-      {sectionOrder.map((key) => sectionContent[key])}
+  // ── One-column layout (website mode) ─────────────────────────────
+  return (
+    <div className={cn("min-h-full", isTerminal && "font-mono")}>
+      {/* Hero — full-bleed tinted section */}
+      <section className={cn("px-8 py-16", accent.heroBg)}>
+        <div className="max-w-4xl mx-auto">
+          <Hero basicInfo={basicInfo} accent={accent} variant="full" />
+        </div>
+      </section>
+
+      {/* Sticky navigation */}
+      {visibleNavKeys.length > 0 && (
+        <nav
+          className={cn(
+            "sticky top-0 z-10 border-b bg-white/90 backdrop-blur-sm",
+            accent.border
+          )}
+        >
+          <div className="max-w-4xl mx-auto px-8 flex gap-6 h-10 items-center overflow-x-auto">
+            {visibleNavKeys.map((key) => (
+              <a
+                key={key}
+                href={`#section-${key}`}
+                className="text-xs font-medium text-zinc-400 hover:text-zinc-900 whitespace-nowrap transition-colors"
+              >
+                {NAV_LABELS[key]}
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+
+      {/* Sections */}
+      <div className="max-w-4xl mx-auto px-8 py-14 space-y-16">
+        {sectionOrder.map((key) => {
+          const content = sectionContent[key];
+          if (!content) return null;
+          return (
+            <section key={key} id={`section-${key}`}>
+              {content}
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

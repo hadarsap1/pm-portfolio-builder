@@ -37,9 +37,9 @@ export default function ProjectsSection({
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-zinc-900 leading-snug">{p.title || "Untitled Project"}</p>
+                <p className="text-base font-semibold text-zinc-900 leading-snug">{p.title || "Untitled Project"}</p>
                 <p
-                  className={cn("text-xs font-medium mt-0.5", accent.heading)}
+                  className={cn("text-sm font-medium mt-0.5", accent.heading)}
                   style={accent.customHex ? { color: accent.customHex } : undefined}
                 >
                   {[p.company, p.duration].filter(Boolean).join(" · ")}
@@ -82,8 +82,8 @@ export default function ProjectsSection({
               ].map(({ label, text }) =>
                 text ? (
                   <div key={label} className="space-y-1">
-                    <p className="text-[9px] font-semibold uppercase tracking-widest text-zinc-400">{label}</p>
-                    <p className="text-xs text-zinc-600 leading-relaxed">{text}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{label}</p>
+                    <p className="text-sm text-zinc-600 leading-relaxed">{text}</p>
                   </div>
                 ) : null
               )}

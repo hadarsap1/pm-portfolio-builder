@@ -38,14 +38,14 @@ export default function ExperienceSection({ experience, accent }: ExperienceSect
 
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="font-semibold text-zinc-900 text-sm leading-snug">
+              <p className="font-semibold text-zinc-900 text-base leading-snug">
                 {item.role || "Role"}
               </p>
-              <p className={cn("text-xs font-medium mt-0.5", accent.heading)}>
+              <p className={cn("text-sm font-medium mt-0.5", accent.heading)}>
                 {item.company || "Company"}
               </p>
             </div>
-            <p className="text-[11px] text-zinc-400 shrink-0 pt-0.5">
+            <p className="text-xs text-zinc-400 shrink-0 pt-0.5">
               {[item.startDate, item.endDate].filter(Boolean).join(" — ") || "Dates"}
             </p>
           </div>
@@ -53,8 +53,8 @@ export default function ExperienceSection({ experience, accent }: ExperienceSect
           {item.bullets.length > 0 && (
             <ul className="mt-2 space-y-1.5">
               {item.bullets.map((bullet, bi) => (
-                <li key={bi} className="text-xs text-zinc-600 leading-relaxed flex gap-2">
-                  <span className={cn("mt-1.5 h-1 w-1 rounded-full shrink-0", accent.heading.replace("text-", "bg-"))} />
+                <li key={bi} className="text-sm text-zinc-600 leading-relaxed flex gap-2">
+                  <span className={cn("mt-2 h-1 w-1 rounded-full shrink-0", accent.heading.replace("text-", "bg-"))} />
                   {bullet}
                 </li>
               ))}
