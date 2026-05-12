@@ -39,18 +39,24 @@ export default function ResumeImportModal({ open, onClose }: Props): React.JSX.E
       }
 
       const d = body.data;
+      const existing = usePortfolioStore.getState().portfolio;
+      const bi = (d.basicInfo ?? {}) as Record<string, unknown>;
 
       // Hydrate store — add IDs to every nested item
       const portfolio: PortfolioData = {
-        portfolioId: usePortfolioStore.getState().portfolio.portfolioId,
+        portfolioId: existing.portfolioId,
         basicInfo: {
-          name: String(d.basicInfo && (d.basicInfo as Record<string, unknown>).name || ""),
-          title: String(d.basicInfo && (d.basicInfo as Record<string, unknown>).title || ""),
-          email: String(d.basicInfo && (d.basicInfo as Record<string, unknown>).email || ""),
-          location: String(d.basicInfo && (d.basicInfo as Record<string, unknown>).location || ""),
-          linkedin: String(d.basicInfo && (d.basicInfo as Record<string, unknown>).linkedin || ""),
-          github: String(d.basicInfo && (d.basicInfo as Record<string, unknown>).github || ""),
-          summary: String(d.basicInfo && (d.basicInfo as Record<string, unknown>).summary || ""),
+          name:     String(bi.name     ?? ""),
+          title:    String(bi.title    ?? ""),
+          email:    String(bi.email    ?? ""),
+          location: String(bi.location ?? ""),
+          linkedin: String(bi.linkedin ?? ""),
+          github:   String(bi.github   ?? ""),
+          summary:  String(bi.summary  ?? ""),
+          // Preserve user-set fields the resume can't provide
+          tagline:      existing.basicInfo.tagline,
+          avatarUrl:    existing.basicInfo.avatarUrl,
+          heroImageUrl: existing.basicInfo.heroImageUrl,
         },
         experience: addIds(Array.isArray(d.experience) ? d.experience : []).map((e) => ({
           id: e.id,
