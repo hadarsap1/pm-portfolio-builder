@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { Button } from "@/components/ui/button";
+import { useDeployStatus } from "@/hooks/useDeployStatus";
 
 type DeployState =
   | { status: "idle" }
@@ -24,6 +25,7 @@ export default function ExportControls(): React.JSX.Element {
   const [repoName, setRepoName] = useState("pm-portfolio");
   const [showRepoInput, setShowRepoInput] = useState(false);
   const [vercelState, setVercelState] = useState<VercelState>("idle");
+  const deployStatus = useDeployStatus();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -178,51 +180,65 @@ export default function ExportControls(): React.JSX.Element {
       </Button>
 
       {/* Vercel deploy */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleVercelDeploy}
-        disabled={vercelState === "loading"}
-        className="hidden md:flex"
-      >
-        {vercelState === "loading" ? "…" : vercelState === "success" ? "✓ Vercel" : "▲ Vercel"}
-      </Button>
+      {deployStatus?.vercel ? (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleVercelDeploy}
+          disabled={vercelState === "loading"}
+          className="hidden md:flex"
+        >
+          {vercelState === "loading" ? "…" : vercelState === "success" ? "✓ Vercel" : "▲ Vercel"}
+        </Button>
+      ) : deployStatus !== null ? (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled
+          title="Add VERCEL_TOKEN to your environment variables to enable one-click Vercel deployment"
+          className="hidden md:flex opacity-40"
+        >
+          ▲ Vercel
+        </Button>
+      ) : null}
 
       {/* GitHub Pages deploy with optional repo name */}
-      <div className="flex items-center gap-1.5">
-        {showRepoInput && (
-          <input
-            type="text"
-            value={repoName}
-            onChange={(e) => setRepoName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"))}
-            onKeyDown={(e) => { if (e.key === "Enter") handleDeploy(); if (e.key === "Escape") setShowRepoInput(false); }}
-            className="h-7 w-36 border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary/50"
-            placeholder="repo-name"
-            autoFocus
-          />
-        )}
-        <Button
-          size="sm"
-          onClick={showRepoInput ? handleDeploy : () => setShowRepoInput(true)}
-          disabled={deployState.status === "loading"}
-        >
-          {deployState.status === "loading"
-            ? "Deploying…"
-            : showRepoInput
-              ? "Push →"
-              : isAuthenticated
-                ? "Push to GitHub"
-                : "Deploy"}
-        </Button>
-        {showRepoInput && (
-          <button
-            onClick={() => setShowRepoInput(false)}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+      {deployStatus?.github !== false && (
+        <div className="flex items-center gap-1.5">
+          {showRepoInput && (
+            <input
+              type="text"
+              value={repoName}
+              onChange={(e) => setRepoName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"))}
+              onKeyDown={(e) => { if (e.key === "Enter") handleDeploy(); if (e.key === "Escape") setShowRepoInput(false); }}
+              className="h-7 w-36 border border-border bg-background px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary/50"
+              placeholder="repo-name"
+              autoFocus
+            />
+          )}
+          <Button
+            size="sm"
+            onClick={showRepoInput ? handleDeploy : () => setShowRepoInput(true)}
+            disabled={deployState.status === "loading" || deployStatus === null}
           >
-            ✕
-          </button>
-        )}
-      </div>
+            {deployState.status === "loading"
+              ? "Deploying…"
+              : showRepoInput
+                ? "Push →"
+                : isAuthenticated
+                  ? "Push to GitHub"
+                  : "Deploy"}
+          </Button>
+          {showRepoInput && (
+            <button
+              onClick={() => setShowRepoInput(false)}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

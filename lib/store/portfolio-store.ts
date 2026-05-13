@@ -56,7 +56,7 @@ const DEFAULT_PORTFOLIO: PortfolioData = {
 
 const DEFAULT_DESIGN: DesignPreferences = {
   colorTheme: "minimal",
-  layoutStyle: "two-column",
+  layoutStyle: "one-column",
   fontStyle: "modern",
   metricsDensity: "full",
 };
