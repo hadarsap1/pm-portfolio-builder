@@ -40,6 +40,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const events = getAllEvents();
+  const events = await getAllEvents();
   return NextResponse.json({ events, count: events.length });
 }
