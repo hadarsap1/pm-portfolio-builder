@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { generatePortfolioHTML } from "@/lib/export/generate-html";
 import type { PortfolioData, DesignPreferences, StrategicFocus } from "@/lib/types/portfolio";
+import { recordAppEvent } from "@/lib/server/app-events";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const html = generatePortfolioHTML(portfolio, design, strategy);
   const name = portfolio.basicInfo.name?.replace(/[^a-z0-9]/gi, "-").toLowerCase() || "portfolio";
 
+  recordAppEvent("export_html");
   return new NextResponse(html, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",

@@ -6,6 +6,7 @@ import { STARTER_TEMPLATES } from "@/lib/templates/starter-templates";
 import { loadTemplate } from "@/lib/templates/load-template";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/client/track";
 
 const THEME_COLORS: Record<string, string> = {
   minimal: "bg-slate-100 text-slate-700",
@@ -72,11 +73,13 @@ export default function TemplatePickerModal({ open, onClose }: Props): React.JSX
     if (userHasData) {
       const template = loadTemplate(templateId, { styleOnly: true });
       if (!template) return;
+      trackEvent("template_apply", { templateId, mode: "style-only" });
       onClose();
       toast.success(`"${template.name}" style applied — your content was kept.`);
     } else {
       const template = loadTemplate(templateId);
       if (!template) return;
+      trackEvent("template_apply", { templateId, mode: "full" });
       onClose();
       toast.success(`"${template.name}" loaded — fill in your details.`);
     }

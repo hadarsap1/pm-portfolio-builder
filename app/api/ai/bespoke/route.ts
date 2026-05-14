@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { clientIp, rateLimit } from "@/lib/server/rate-limit";
+import { recordAppEvent } from "@/lib/server/app-events";
 
 export const dynamic = "force-dynamic";
 // Image generation is slow — give it room to breathe before Vercel cuts it off.
@@ -132,6 +133,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const mime = imagePart.inlineData.mimeType ?? "image/png";
     const dataUrl = `data:${mime};base64,${imagePart.inlineData.data}`;
+    recordAppEvent("ai_bespoke");
     return NextResponse.json({ kind: body.kind, dataUrl });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

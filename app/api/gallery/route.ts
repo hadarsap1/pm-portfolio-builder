@@ -4,6 +4,7 @@ import {
   removeGalleryEntry,
   upsertGalleryEntry,
 } from "@/lib/server/gallery-store";
+import { recordAppEvent } from "@/lib/server/app-events";
 
 export const dynamic = "force-dynamic";
 
@@ -88,6 +89,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     shareUrl,
   });
 
+  recordAppEvent("gallery_submit");
   return NextResponse.json({ ok: true, entry });
 }
 

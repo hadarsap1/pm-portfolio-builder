@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { clientIp, rateLimit } from "@/lib/server/rate-limit";
+import { recordAppEvent } from "@/lib/server/app-events";
 
 export const dynamic = "force-dynamic";
 
@@ -354,6 +355,7 @@ ${body.text}`;
 
     try {
       const parsed = JSON.parse(cleaned) as Record<string, unknown>;
+      recordAppEvent("resume_import");
       return NextResponse.json({ data: parsed });
     } catch {
       return NextResponse.json({ error: "AI returned invalid JSON. Try again." }, { status: 502 });
@@ -682,10 +684,12 @@ Return ONLY a JSON object: { "statement": "string", "detail": "string" }`;
       if (candidates.length === 0) {
         return NextResponse.json({ error: "No candidates returned." }, { status: 502 });
       }
+      recordAppEvent("ai_polish", { kind: "tagline" });
       return NextResponse.json({ kind: "tagline", candidates });
     }
     if (body.kind === "mission") {
       const obj = parsed as { title?: unknown; body?: unknown };
+      recordAppEvent("ai_polish", { kind: "mission" });
       return NextResponse.json({
         kind: "mission",
         title: typeof obj.title === "string" ? obj.title : "",
@@ -694,6 +698,7 @@ Return ONLY a JSON object: { "statement": "string", "detail": "string" }`;
     }
     // manifesto
     const obj = parsed as { statement?: unknown; detail?: unknown };
+    recordAppEvent("ai_polish", { kind: "manifesto" });
     return NextResponse.json({
       kind: "manifesto",
       statement: typeof obj.statement === "string" ? obj.statement : "",

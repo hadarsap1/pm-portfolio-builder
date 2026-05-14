@@ -1,7 +1,9 @@
 "use client";
 
+import React from "react";
 import { usePortfolioStore } from "@/lib/store/portfolio-store";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/client/track";
 
 export default function WizardNavigation(): React.JSX.Element {
   const currentStep = usePortfolioStore((s) => s.wizard.currentStep);
@@ -28,7 +30,7 @@ export default function WizardNavigation(): React.JSX.Element {
       </span>
 
       {isLast ? (
-        <Button onClick={completeWizard}>
+        <Button onClick={() => { trackEvent("wizard_complete"); completeWizard(); }}>
           Finish
         </Button>
       ) : (

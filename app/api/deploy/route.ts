@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { generatePortfolioHTML } from "@/lib/export/generate-html";
 import type { PortfolioData, DesignPreferences, StrategicFocus } from "@/lib/types/portfolio";
+import { recordAppEvent } from "@/lib/server/app-events";
 
 export const dynamic = "force-dynamic";
 
@@ -148,5 +149,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const pagesUrl = `https://${user.login}.github.io/${repoName}/`;
 
+  recordAppEvent("deploy_github");
   return NextResponse.json({ url: repo.html_url, pagesUrl });
 }

@@ -14,6 +14,7 @@ import TemplatePickerModal from "@/components/builder/TemplatePickerModal";
 import { loadTemplate } from "@/lib/templates/load-template";
 import { STARTER_TEMPLATES } from "@/lib/templates/starter-templates";
 import { cn } from "@/lib/utils";
+import { trackEvent } from "@/lib/client/track";
 
 export default function BuilderLayout(): React.JSX.Element {
   const router = useRouter();
@@ -44,6 +45,9 @@ export default function BuilderLayout(): React.JSX.Element {
     toast.success(`Demo loaded: ${template.name}`);
     router.replace("/builder");
   }, [searchParams, router]);
+
+  // Track builder open once per session
+  useEffect(() => { trackEvent("builder_open"); }, []);
 
   // Auto-show template picker on first empty visit.
   useEffect(() => {
